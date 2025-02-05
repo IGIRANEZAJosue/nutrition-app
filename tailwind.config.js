@@ -4,7 +4,17 @@ module.exports = {
 
   presets: [require('nativewind/preset')],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        geistLight: ['Geist-Light', 'sans-serif'],
+        geistThin: ['Geist-Thin', 'sans-serif'],
+        geistRegular: ['Geist-Regular', 'sans-serif'],
+        geistMeduim: ['Geist-Meduim', 'sans-serif'],
+        geistSemiBold: ['Geist-SemiBold', 'sans-serif'],
+        geistBold: ['Geist-Bold', 'sans-serif'],
+        geistBlack: ['Geist-Black', 'sans-serif'],
+      },
+    },
   },
   plugins: [],
 };

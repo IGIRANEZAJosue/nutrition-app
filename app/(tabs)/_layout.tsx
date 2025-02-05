@@ -1,7 +1,6 @@
+import { FontAwesome } from '@expo/vector-icons';
 import { Link, Tabs } from 'expo-router';
-
-import { HeaderButton } from '../../components/HeaderButton';
-import { TabBarIcon } from '../../components/TabBarIcon';
+import { Text } from 'react-native';
 
 export default function TabLayout() {
   return (
@@ -13,10 +12,10 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <FontAwesome name="home" color={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>
-              <HeaderButton />
+              <Text>Hello</Text>
             </Link>
           ),
         }}
@@ -25,7 +24,7 @@ export default function TabLayout() {
         name="two"
         options={{
           title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarIcon: ({ color }) => <FontAwesome name="home" color={color} />,
         }}
       />
     </Tabs>
