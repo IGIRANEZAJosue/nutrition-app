@@ -6,7 +6,8 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: 'black',
+        tabBarActiveTintColor: '#00bfa6',
+        headerShown: false,
       }}>
       <Tabs.Screen
         name="index"
@@ -21,7 +22,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="Profile"
         options={{
           title: 'Tab Two',
           tabBarIcon: ({ color }) => <FontAwesome name="home" color={color} />,
