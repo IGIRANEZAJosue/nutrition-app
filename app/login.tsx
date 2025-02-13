@@ -1,12 +1,12 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
-const Progress = () => {
+const Login = () => {
   return (
     <View>
-      <Text>Progress</Text>
+      <Text>Login</Text>
     </View>
   );
 };
 
-export default Progress;
+export default Login;
