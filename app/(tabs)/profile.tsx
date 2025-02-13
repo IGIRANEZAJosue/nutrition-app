@@ -6,7 +6,7 @@ export default function Profile() {
     <>
       <Stack.Screen options={{ title: 'Tab Two' }} />
       <View>
-        <Text>Hello</Text>
+        <Text>Profile</Text>
       </View>
     </>
   );
