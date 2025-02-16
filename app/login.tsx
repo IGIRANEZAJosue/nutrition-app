@@ -16,7 +16,10 @@ const Login = () => {
         </View>
         <View className="mb-4">
           <Text className="my-2 font-geistRegular font-semibold">Password</Text>
-          <TextInput className="w-full rounded-lg border border-gray-300 bg-green-200/10 p-4" />
+          <TextInput
+            className="w-full rounded-lg border border-gray-300 bg-green-200/10 p-4"
+            secureTextEntry
+          />
         </View>
       </View>
     </View>
