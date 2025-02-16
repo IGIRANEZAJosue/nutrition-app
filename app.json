@@ -4,6 +4,7 @@
     "slug": "my-nutri-app",
     "version": "1.0.0",
     "scheme": "my-nutri-app",
+    "newArchEnabled": true,
     "web": {
       "bundler": "metro",
       "output": "static",
