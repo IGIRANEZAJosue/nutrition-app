@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const Login = () => {
   return (
@@ -12,14 +12,19 @@ const Login = () => {
         </Text>
         <View className="my-4">
           <Text className="my-2 font-geistRegular font-semibold">E-mail</Text>
-          <TextInput className="w-full rounded-lg border border-gray-300 bg-green-200/10 p-4" />
+          <TextInput className="w-full rounded-lg border border-gray-200 p-4" />
         </View>
         <View className="mb-4">
           <Text className="my-2 font-geistRegular font-semibold">Password</Text>
-          <TextInput
-            className="w-full rounded-lg border border-gray-300 bg-green-200/10 p-4"
-            secureTextEntry
-          />
+          <TextInput className="w-full rounded-lg border border-gray-200 p-4" secureTextEntry />
+        </View>
+        <View className="gap-4">
+          <TouchableOpacity className="rounded-lg bg-primary p-4">
+            <Text className="font-geistMedium text-center text-base text-white">Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="rounded-lg border border-gray-200 bg-transparent p-4">
+            <Text className="font-geistMedium text-center text-base">Login with Google </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
