@@ -1,9 +1,10 @@
+import { router } from 'expo-router';
 import React from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const Login = () => {
   return (
-    <View className="flex-1 bg-primaryDark">
+    <SafeAreaView className="flex-1 bg-primaryDark">
       <Text className="text-white">Login</Text>
       <View className="min-h-1/2 absolute bottom-0 w-full rounded-t-3xl bg-white p-5">
         <Text className="font-geistSemiBold text-3xl text-primaryDark">Login</Text>
@@ -26,8 +27,16 @@ const Login = () => {
             <Text className="font-geistMedium text-center text-base">Login with Google </Text>
           </TouchableOpacity>
         </View>
+        <View>
+          <Text className="mt-4 text-center text-sm text-gray-500">
+            Don't have an account?{' '}
+            <Text onPress={() => router.push('/signup')} className="text-primary">
+              Sign up
+            </Text>
+          </Text>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
