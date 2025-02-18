@@ -14,6 +14,11 @@ module.exports = {
         geistBold: ['Geist-Bold', 'sans-serif'],
         geistBlack: ['Geist-Black', 'sans-serif'],
       },
+      colors: {
+        primary: '#10C875',
+        primaryDark: '#064431',
+        primaryLight: '#D5FF88',
+      },
     },
   },
   plugins: [],
