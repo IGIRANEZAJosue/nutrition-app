@@ -5,7 +5,6 @@ import { SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-nat
 const Login = () => {
   return (
     <SafeAreaView className="flex-1 bg-primaryDark">
-      <Text className="text-white">Login</Text>
       <View className="min-h-1/2 absolute bottom-0 w-full rounded-t-3xl bg-white p-4">
         <Text className="font-geistSemiBold text-3xl text-primaryDark">Login</Text>
         <Text className="text-geistRegular my-2 text-base text-gray-500">
