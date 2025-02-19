@@ -6,7 +6,7 @@ const Login = () => {
   return (
     <SafeAreaView className="flex-1 bg-primaryDark">
       <Text className="text-white">Login</Text>
-      <View className="min-h-1/2 absolute bottom-0 w-full rounded-t-3xl bg-white p-5">
+      <View className="min-h-1/2 absolute bottom-0 w-full rounded-t-3xl bg-white p-4">
         <Text className="font-geistSemiBold text-3xl text-primaryDark">Login</Text>
         <Text className="text-geistRegular my-2 text-base text-gray-500">
           Enter your email and password below to login to your account.
@@ -19,7 +19,7 @@ const Login = () => {
           <Text className="my-2 font-geistRegular font-semibold">Password</Text>
           <TextInput className="w-full rounded-lg border border-gray-200 p-4" secureTextEntry />
         </View>
-        <View className="gap-4">
+        <View className="my-4 gap-4">
           <TouchableOpacity className="rounded-lg bg-primary p-4">
             <Text className="font-geistMedium text-center text-base text-white">Login</Text>
           </TouchableOpacity>
@@ -27,14 +27,13 @@ const Login = () => {
             <Text className="font-geistMedium text-center text-base">Login with Google </Text>
           </TouchableOpacity>
         </View>
-        <View>
-          <Text className="mt-4 text-center text-sm text-gray-500">
-            Don't have an account?{' '}
-            <Text onPress={() => router.push('/signup')} className="text-primary">
-              Sign up
-            </Text>
+
+        <Text className="mb-12 mt-4 text-center text-sm text-gray-500">
+          Don't have an account?{' '}
+          <Text onPress={() => router.push('/signup')} className="text-primary">
+            Sign up
           </Text>
-        </View>
+        </Text>
       </View>
     </SafeAreaView>
   );
