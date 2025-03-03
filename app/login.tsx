@@ -20,7 +20,9 @@ const Login = () => {
           <TextInput className="w-full rounded-lg border border-gray-200 p-4" secureTextEntry />
         </View>
         <View className="my-4 gap-4">
-          <TouchableOpacity className="rounded-lg bg-primary p-4">
+          <TouchableOpacity
+            onPress={() => router.replace('/')}
+            className="rounded-lg bg-primary p-4">
             <Text className="font-geistMedium text-center text-base text-white">Login</Text>
           </TouchableOpacity>
           <TouchableOpacity className="rounded-lg border border-gray-200 bg-transparent p-4">
