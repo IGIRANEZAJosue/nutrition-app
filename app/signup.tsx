@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import React from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-const signup = () => {
+const Signup = () => {
   return (
     <View className="flex-1 items-center bg-primaryDark">
       <Image className="my-16 h-28" resizeMode="contain" source={require('../assets/logo.png')} />
@@ -41,4 +41,4 @@ const signup = () => {
   );
 };
 
-export default signup;
+export default Signup;
