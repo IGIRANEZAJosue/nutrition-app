@@ -1,30 +1,44 @@
-import { FontAwesome } from '@expo/vector-icons';
-import { Link, Tabs } from 'expo-router';
-import { Text } from 'react-native';
+import { Tabs } from 'expo-router';
+import { HeartPulse, House, Lightbulb, UserRound } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: 'black',
+        headerShown: false,
+        tabBarActiveTintColor: '#22C55E',
+        tabBarInactiveTintColor: 'gray',
+        tabBarStyle: {
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+        },
       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <FontAwesome name="home" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Text>Hello</Text>
-            </Link>
-          ),
+          title: 'Home',
+          tabBarIcon: ({ color }) => <House size={24} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="insights"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <FontAwesome name="home" color={color} />,
+          title: 'Insights',
+          tabBarIcon: ({ color }) => <Lightbulb size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="progress"
+        options={{
+          title: 'Progress',
+          tabBarIcon: ({ color }) => <HeartPulse size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color }) => <UserRound size={24} color={color} />,
         }}
       />
     </Tabs>
