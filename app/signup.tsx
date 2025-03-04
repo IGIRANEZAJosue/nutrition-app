@@ -1,8 +1,11 @@
 import { router } from 'expo-router';
-import React from 'react';
+import { useState } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const Signup = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
   return (
     <View className="flex-1 items-center bg-primaryDark">
       <Image className="my-16 h-28" resizeMode="contain" source={require('../assets/logo.png')} />
@@ -13,11 +16,20 @@ const Signup = () => {
         </Text>
         <View className="my-4">
           <Text className="my-2 font-geistRegular font-semibold">E-mail</Text>
-          <TextInput className="w-full rounded-lg border border-gray-200 p-4" />
+          <TextInput
+            onChangeText={setEmail}
+            value={email}
+            className="w-full rounded-lg border border-gray-200 p-4"
+          />
         </View>
         <View className="mb-4">
           <Text className="my-2 font-geistRegular font-semibold">Password</Text>
-          <TextInput className="w-full rounded-lg border border-gray-200 p-4" secureTextEntry />
+          <TextInput
+            onChangeText={setPassword}
+            value={password}
+            className="w-full rounded-lg border border-gray-200 p-4"
+            secureTextEntry
+          />
         </View>
         <View className="my-4 gap-4">
           <TouchableOpacity

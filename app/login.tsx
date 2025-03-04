@@ -1,10 +1,14 @@
 import { router } from 'expo-router';
-import React from 'react';
+import { StatusBar } from 'expo-status-bar';
+import React, { useState } from 'react';
 import { Image, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   return (
     <SafeAreaView className="flex-1 items-center justify-between bg-primaryDark">
+      <StatusBar style="light" />
       <Image source={require('../assets/logo.png')} className="my-16 h-28" resizeMode="contain" />
       <View className="min-h-1/2 absolute bottom-0 w-full rounded-t-3xl bg-white p-4">
         <Text className="font-geistSemiBold text-3xl text-primaryDark">Login</Text>
@@ -13,11 +17,20 @@ const Login = () => {
         </Text>
         <View className="my-4">
           <Text className="my-2 font-geistRegular font-semibold">E-mail</Text>
-          <TextInput className="w-full rounded-lg border border-gray-200 p-4" />
+          <TextInput
+            onChangeText={setEmail}
+            className="w-full rounded-lg border border-gray-200 p-4"
+            value={email}
+          />
         </View>
         <View className="mb-4">
           <Text className="my-2 font-geistRegular font-semibold">Password</Text>
-          <TextInput className="w-full rounded-lg border border-gray-200 p-4" secureTextEntry />
+          <TextInput
+            onChangeText={setPassword}
+            className="w-full rounded-lg border border-gray-200 p-4"
+            secureTextEntry
+            value={password}
+          />
         </View>
         <View className="my-4 gap-4">
           <TouchableOpacity
