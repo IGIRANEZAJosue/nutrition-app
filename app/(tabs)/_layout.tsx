@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { HeartPulse, House, Lightbulb, UserRound } from 'lucide-react-native';
 
@@ -7,6 +6,11 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: '#22C55E',
+        tabBarInactiveTintColor: 'gray',
+        tabBarStyle: {
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+        },
       }}>
       <Tabs.Screen
         name="index"
