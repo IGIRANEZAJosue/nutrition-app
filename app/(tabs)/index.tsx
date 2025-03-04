@@ -1,16 +1,14 @@
-import { Stack } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Header from '~/components/Header';
 
 export default function Home() {
   return (
-    <>
-      <View style={styles.container}>
-        <Header />
-        <Text>Hello</Text>
-      </View>
-    </>
+    <SafeAreaView style={styles.container}>
+      <Header />
+      <Text className="text-center font-geistBold text-3xl text-primaryDark">Home</Text>
+    </SafeAreaView>
   );
 }
 
