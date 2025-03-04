@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
+import { HeartPulse, House, Lightbulb, UserRound } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -11,28 +12,28 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <Ionicons name="home" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <House size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="insights"
         options={{
           title: 'Insights',
-          tabBarIcon: ({ color }) => <Ionicons name="bulb" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <Lightbulb size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="progress"
         options={{
           title: 'Progress',
-          tabBarIcon: ({ color }) => <Ionicons name="trending-up" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <HeartPulse size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => <Ionicons name="person" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <UserRound size={24} color={color} />,
         }}
       />
     </Tabs>
