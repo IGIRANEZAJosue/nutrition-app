@@ -21,6 +21,7 @@ const Login = () => {
             onChangeText={setEmail}
             value={email}
             keyboardType="email-address"
+            placeholder="m@example.com"
             className="w-full rounded-lg border border-gray-200 p-4"
           />
         </View>
@@ -28,9 +29,9 @@ const Login = () => {
           <Text className="my-2 font-geistRegular font-semibold">Password</Text>
           <TextInput
             onChangeText={setPassword}
-            className="w-full rounded-lg border border-gray-200 p-4"
-            secureTextEntry
             value={password}
+            secureTextEntry
+            className="w-full rounded-lg border border-gray-200 p-4"
           />
         </View>
         <View className="my-4 gap-4">

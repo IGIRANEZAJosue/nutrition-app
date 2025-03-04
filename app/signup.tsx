@@ -20,6 +20,7 @@ const Signup = () => {
             onChangeText={setEmail}
             value={email}
             keyboardType="email-address"
+            placeholder="m@example.com"
             className="w-full rounded-lg border border-gray-200 p-4"
           />
         </View>
