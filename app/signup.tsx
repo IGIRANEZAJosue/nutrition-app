@@ -19,6 +19,7 @@ const Signup = () => {
           <TextInput
             onChangeText={setEmail}
             value={email}
+            keyboardType="email-address"
             className="w-full rounded-lg border border-gray-200 p-4"
           />
         </View>

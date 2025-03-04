@@ -19,8 +19,9 @@ const Login = () => {
           <Text className="my-2 font-geistRegular font-semibold">E-mail</Text>
           <TextInput
             onChangeText={setEmail}
-            className="w-full rounded-lg border border-gray-200 p-4"
             value={email}
+            keyboardType="email-address"
+            className="w-full rounded-lg border border-gray-200 p-4"
           />
         </View>
         <View className="mb-4">
