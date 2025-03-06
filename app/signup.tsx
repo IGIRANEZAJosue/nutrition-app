@@ -1,13 +1,14 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   return (
-    <View className="flex-1 items-center bg-primaryDark">
+    <SafeAreaView className="flex-1 items-center bg-primaryDark">
       <Image className="my-16 h-28" resizeMode="contain" source={require('../assets/logo.png')} />
       <View className="min-h-1/2 absolute bottom-0 w-full rounded-t-3xl bg-white p-4">
         <Text className="font-geistSemiBold text-3xl text-primaryDark">Sign up</Text>
@@ -37,10 +38,10 @@ const Signup = () => {
           <TouchableOpacity
             onPress={() => router.replace('/')}
             className="rounded-lg bg-primary p-4">
-            <Text className="font-geistMedium text-center text-base text-white">Sign up</Text>
+            <Text className="text-center font-geistMedium text-base text-white">Sign up</Text>
           </TouchableOpacity>
           <TouchableOpacity className="rounded-lg border border-gray-200 bg-transparent p-4">
-            <Text className="font-geistMedium text-center text-base">Sign up with Google </Text>
+            <Text className="text-center font-geistMedium text-base">Sign up with Google </Text>
           </TouchableOpacity>
         </View>
 
@@ -51,7 +52,7 @@ const Signup = () => {
           </Text>
         </Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
