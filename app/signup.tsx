@@ -38,10 +38,10 @@ const Signup = () => {
           <TouchableOpacity
             onPress={() => router.replace('/')}
             className="rounded-lg bg-primary p-4">
-            <Text className="font-geistMedium text-center text-base text-white">Sign up</Text>
+            <Text className="text-center font-geistMedium text-base text-white">Sign up</Text>
           </TouchableOpacity>
           <TouchableOpacity className="rounded-lg border border-gray-200 bg-transparent p-4">
-            <Text className="font-geistMedium text-center text-base">Sign up with Google </Text>
+            <Text className="text-center font-geistMedium text-base">Sign up with Google </Text>
           </TouchableOpacity>
         </View>
 

@@ -18,7 +18,7 @@ export default function Profile() {
         className="rounded-lg bg-primary p-4"
         accessibilityRole="button"
         accessibilityLabel="Logout from your account">
-        <Text className="font-geistMedium text-center text-base text-white">Logout</Text>
+        <Text className="text-center font-geistMedium text-base text-white">Logout</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
