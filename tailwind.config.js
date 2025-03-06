@@ -9,7 +9,7 @@ module.exports = {
         geistLight: ['Geist-Light', 'sans-serif'],
         geistThin: ['Geist-Thin', 'sans-serif'],
         geistRegular: ['Geist-Regular', 'sans-serif'],
-        geistMeduim: ['Geist-Meduim', 'sans-serif'],
+        geistMedium: ['Geist-Medium', 'sans-serif'],
         geistSemiBold: ['Geist-SemiBold', 'sans-serif'],
         geistBold: ['Geist-Bold', 'sans-serif'],
         geistBlack: ['Geist-Black', 'sans-serif'],
