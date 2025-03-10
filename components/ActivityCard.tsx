@@ -1,4 +1,4 @@
-import { Footprints, FootprintsIcon } from 'lucide-react-native';
+import { Footprints } from 'lucide-react-native';
 import React from 'react';
 import { Text, View } from 'react-native';
 
@@ -15,7 +15,7 @@ const ActivityCard = ({ title, value, target, percentage }: ActivityCardProps) =
       <View className="gap-4">
         <View className="flex-row items-center gap-3">
           <View className="size-12 items-center justify-center rounded-full bg-primaryLight">
-            <Footprints size={20} />
+            <Footprints size={20} color="black" />
           </View>
           <Text className="font-geistMedium text-xl capitalize">{title}</Text>
         </View>
