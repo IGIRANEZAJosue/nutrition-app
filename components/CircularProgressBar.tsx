@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
@@ -13,9 +14,22 @@ export default function CircularProgressBar({
   color = '#2ecc71',
 }: CircularProgressBarProps) {
   const strokeWidth = 10;
-  const radius = size / 2 - strokeWidth / 2;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference * (1 - progress / 100);
+
+  const calculations = useMemo(() => {
+    const radius = size / 2 - strokeWidth / 2;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference * (1 - progress / 100);
+    const rotationTransform = `rotate(-90 ${size / 2} ${size / 2})`;
+
+    return {
+      radius,
+      circumference,
+      strokeDashoffset,
+      rotationTransform,
+    };
+  }, [size, progress, strokeWidth]);
+
+  const { radius, circumference, strokeDashoffset, rotationTransform } = calculations;
 
   return (
     <View className="relative flex items-center justify-center">
@@ -41,7 +55,7 @@ export default function CircularProgressBar({
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          transform={`rotate(-90 ${size / 2} ${size / 2})`} // Makes the circle start from the top and go in clockwise direction
+          transform={rotationTransform} // Makes the circle start from the top and go in clockwise direction
         />
       </Svg>
 
