@@ -1,6 +1,7 @@
 import { Footprints } from 'lucide-react-native';
 import React from 'react';
 import { Text, View } from 'react-native';
+
 import CircularProgressBar from './CircularProgressBar';
 
 interface ActivityCardProps {
