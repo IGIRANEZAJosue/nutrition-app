@@ -1,8 +1,17 @@
 import { Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
-export default function CircularProgressBar({ size = 120, progress = 80, color = '#2ecc71' }) {
-  //   const size = 120;
+interface CircularProgressBarProps {
+  size?: number;
+  progress?: number;
+  color?: string;
+}
+
+export default function CircularProgressBar({
+  size = 120,
+  progress = 80,
+  color = '#2ecc71',
+}: CircularProgressBarProps) {
   const strokeWidth = 10;
   const radius = size / 2 - strokeWidth / 2;
   const circumference = 2 * Math.PI * radius;
