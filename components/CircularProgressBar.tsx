@@ -10,7 +10,7 @@ interface CircularProgressBarProps {
 
 export default function CircularProgressBar({
   size = 120,
-  progress = 80,
+  progress = 0,
   color = '#2ecc71',
 }: CircularProgressBarProps) {
   const strokeWidth = 10;
@@ -61,7 +61,7 @@ export default function CircularProgressBar({
 
       {/* Percentage Text */}
       <View className="absolute inset-0 flex items-center justify-center">
-        <Text className="text-lg font-bold">{Math.round(progress)}%</Text>
+        <Text className="font-geistBold text-lg">{Math.round(progress)}%</Text>
       </View>
     </View>
   );
