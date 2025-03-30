@@ -1,6 +1,7 @@
 import { Footprints } from 'lucide-react-native';
 import React from 'react';
 import { Text, View } from 'react-native';
+import CircularProgressBar from './CircularProgressBar';
 
 interface ActivityCardProps {
   title: string;
@@ -22,9 +23,7 @@ const ActivityCard = ({ title, value, target, percentage }: ActivityCardProps) =
         <Text className="font-geistBold text-3xl">{value}</Text>
         <Text className="font-geistRegular text-xl text-gray-400">/{target}</Text>
       </View>
-      <View className="size-28 items-center justify-center rounded-full border-8 border-primary">
-        <Text>{percentage}%</Text>
-      </View>
+      <CircularProgressBar progress={percentage} />
     </View>
   );
 };

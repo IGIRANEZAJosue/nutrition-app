@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import ActivityCard from '~/components/ActivityCard';
+import CircularProgressBar from '~/components/CircularProgressBar';
 import Header from '~/components/Header';
 
 export default function Home() {
@@ -14,7 +15,8 @@ export default function Home() {
           <Text className="font-geistSemiBold text-3xl">Josue Igiraneza</Text>
         </View>
         <ActivityCard title="sleep" value={6.5} target={8} percentage={80} />
-        <ActivityCard title="steps" value={5000} target={7500} percentage={80} />
+        <ActivityCard title="steps" value={5000} target={7500} percentage={50} />
+        <CircularProgressBar />
       </View>
     </SafeAreaView>
   );
