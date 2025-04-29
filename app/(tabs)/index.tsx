@@ -1,14 +1,12 @@
 import { Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import ActivityCard from '~/components/ActivityCard';
 import CircularProgressBar from '~/components/CircularProgressBar';
-import Header from '~/components/Header';
+import { Container } from '~/components/Container';
 
 export default function Home() {
   return (
-    <SafeAreaView className="flex-1 bg-gray-100 p-5">
-      <Header />
+    <Container>
       <View className="my-4 gap-4">
         <View>
           <Text className="font-geistMedium text-2xl text-gray-600">Hello,</Text>
@@ -18,6 +16,6 @@ export default function Home() {
         <ActivityCard title="steps" value={5000} target={7500} percentage={50} />
         <CircularProgressBar />
       </View>
-    </SafeAreaView>
+    </Container>
   );
 }

@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { Alert, Text, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { Container } from '~/components/Container';
 
 export default function Profile() {
   function handleLogout() {
@@ -11,7 +12,7 @@ export default function Profile() {
   }
 
   return (
-    <SafeAreaView className="flex-1 p-6">
+    <Container page="profile">
       <Text className="text-center font-geistBold text-4xl text-primaryDark">Profile</Text>
       <TouchableOpacity
         onPress={handleLogout}
@@ -20,6 +21,6 @@ export default function Profile() {
         accessibilityLabel="Logout from your account">
         <Text className="text-center font-geistMedium text-base text-white">Logout</Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </Container>
   );
 }

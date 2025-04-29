@@ -1,15 +1,13 @@
 import React from 'react';
 import { Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
-import Header from '~/components/Header';
+import { Container } from '~/components/Container';
 
 const Insights = () => {
   return (
-    <SafeAreaView className="flex-1 p-5">
-      <Header />
+    <Container page="insights">
       <Text className="text-center font-geistBold text-3xl text-primaryDark">Insights</Text>
-    </SafeAreaView>
+    </Container>
   );
 };
 
