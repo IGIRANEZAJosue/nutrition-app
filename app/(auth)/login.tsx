@@ -3,9 +3,18 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { Image, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { useAuth } from '~/context/AuthContext';
+
 const Login = () => {
+  const { signin } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  function handleLogin() {
+    signin({ email, password });
+    router.replace('/');
+  }
+
   return (
     <SafeAreaView className="flex-1 items-center justify-between bg-primaryDark">
       <StatusBar style="light" />
@@ -39,9 +48,7 @@ const Login = () => {
           />
         </View>
         <View className="my-4 gap-4">
-          <TouchableOpacity
-            onPress={() => router.replace('/')}
-            className="rounded-lg bg-primary p-4">
+          <TouchableOpacity onPress={handleLogin} className="rounded-lg bg-primary p-4">
             <Text className="text-center font-geistMedium text-base text-white">Login</Text>
           </TouchableOpacity>
           <TouchableOpacity className="rounded-lg border border-gray-200 bg-transparent p-4">
