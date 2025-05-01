@@ -9,7 +9,7 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType>({
-  session: true,
+  session: false,
   user: false,
   signin: () => {},
   signout: () => {},
@@ -18,7 +18,7 @@ const AuthContext = createContext<AuthContextType>({
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(false);
-  const [session, setSession] = useState(true);
+  const [session, setSession] = useState(false);
 
   const signin = () => {};
   const signout = () => {};
