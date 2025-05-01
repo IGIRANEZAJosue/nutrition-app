@@ -9,7 +9,7 @@ interface HeaderProps {
 
 const Header = ({ goBack, page }: HeaderProps) => {
   return (
-    <View className="shadow-xs flex flex-row items-center justify-between rounded-full bg-primary/10 p-4">
+    <View className="shadow-xs flex flex-row items-center justify-between rounded-full bg-primary/10 px-4 py-3">
       {goBack ? (
         <Pressable onPress={() => router.back()}>
           <ArrowLeft size={24} />
