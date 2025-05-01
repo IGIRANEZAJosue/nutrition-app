@@ -9,7 +9,11 @@ const Signup = () => {
 
   return (
     <SafeAreaView className="flex-1 items-center bg-primaryDark">
-      <Image className="my-16 h-28" resizeMode="contain" source={require('../assets/logo.png')} />
+      <Image
+        className="my-16 h-28"
+        resizeMode="contain"
+        source={require('../../assets/logo.png')}
+      />
       <View className="min-h-1/2 absolute bottom-0 w-full rounded-t-3xl bg-white p-4">
         <Text className="font-geistSemiBold text-3xl text-primaryDark">Sign up</Text>
         <Text className="text-geistRegular my-2 text-base text-gray-500">
