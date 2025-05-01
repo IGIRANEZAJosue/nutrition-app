@@ -8,12 +8,17 @@ interface AuthContextType {
   signout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType>({
+  session: true,
+  user: false,
+  signin: () => {},
+  signout: () => {},
+});
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(false);
-  const [session, setSession] = useState(false);
+  const [session, setSession] = useState(true);
 
   const signin = () => {};
   const signout = () => {};
@@ -33,8 +38,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-const useAuth = () => {
-  return useContext(AuthContext);
-};
+const useAuth = () => useContext(AuthContext);
 
-export { useAuth, AuthContext, AuthProvider };
+export { AuthContext, AuthProvider, useAuth };
