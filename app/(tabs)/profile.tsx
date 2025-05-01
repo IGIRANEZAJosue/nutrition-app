@@ -7,7 +7,7 @@ export default function Profile() {
   function handleLogout() {
     Alert.alert('Logout', 'Are you sure you want to logout?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Logout', onPress: () => router.push('/login') },
+      { text: 'Logout', onPress: () => router.replace('/login') },
     ]);
   }
 
