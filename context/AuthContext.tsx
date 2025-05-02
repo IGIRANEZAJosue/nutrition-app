@@ -8,7 +8,7 @@ interface AuthContextType {
   session: Models.Session | null;
   user: Models.User<object> | null;
   signin: (data: loginUserDto) => Promise<void>;
-  signout: () => void;
+  signout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -65,6 +65,8 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     await account.deleteSession('current');
     setUser(null);
     setSession(null);
+
+    setLoading(false);
   };
 
   const contextData = { session, user, signin, signout };
