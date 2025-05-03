@@ -18,6 +18,9 @@ export default function TabLayout() {
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
         },
+        sceneStyle: {
+          backgroundColor: 'white',
+        },
       }}>
       <Tabs.Screen
         name="index"
