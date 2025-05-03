@@ -3,13 +3,26 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { Image, SafeAreaView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { useAuth } from '~/context/AuthContext';
+
 const Login = () => {
+  const { signin } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  function handleLogin() {
+    signin({ email, password });
+    router.replace('/');
+  }
+
   return (
     <SafeAreaView className="flex-1 items-center justify-between bg-primaryDark">
       <StatusBar style="light" />
-      <Image source={require('../assets/logo.png')} className="my-16 h-28" resizeMode="contain" />
+      <Image
+        source={require('../../assets/logo.png')}
+        className="my-16 h-28"
+        resizeMode="contain"
+      />
       <View className="min-h-1/2 absolute bottom-0 w-full rounded-t-3xl bg-white p-4">
         <Text className="font-geistSemiBold text-3xl text-primaryDark">Login</Text>
         <Text className="text-geistRegular my-2 text-base text-gray-500">
@@ -35,17 +48,15 @@ const Login = () => {
           />
         </View>
         <View className="my-4 gap-4">
-          <TouchableOpacity
-            onPress={() => router.replace('/')}
-            className="rounded-lg bg-primary p-4">
-            <Text className="font-geistMedium text-center text-base text-white">Login</Text>
+          <TouchableOpacity onPress={handleLogin} className="rounded-lg bg-primary p-4">
+            <Text className="text-center font-geistMedium text-base text-white">Login</Text>
           </TouchableOpacity>
           <TouchableOpacity className="rounded-lg border border-gray-200 bg-transparent p-4">
-            <Text className="font-geistMedium text-center text-base">Login with Google </Text>
+            <Text className="text-center font-geistMedium text-base">Login with Google </Text>
           </TouchableOpacity>
         </View>
 
-        <Text className="mb-12 mt-4 text-center text-sm text-gray-500">
+        <Text className="mb-5 mt-4 text-center text-sm text-gray-500">
           Don't have an account?{' '}
           <Text onPress={() => router.push('/signup')} className="text-primary">
             Sign up

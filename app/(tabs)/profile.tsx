@@ -1,25 +1,26 @@
 import { router } from 'expo-router';
-import { Alert, Text, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, TouchableOpacity } from 'react-native';
+
+import { Container } from '~/components/Container';
+import { useAuth } from '~/context/AuthContext';
 
 export default function Profile() {
-  function handleLogout() {
-    Alert.alert('Logout', 'Are you sure you want to logout?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Logout', onPress: () => router.push('/login') },
-    ]);
+  const { user, signout } = useAuth();
+
+  async function handleLogout() {
+    await signout();
   }
 
   return (
-    <SafeAreaView className="flex-1 p-6">
-      <Text className="text-center font-geistBold text-4xl text-primaryDark">Profile</Text>
+    <Container page="profile">
+      <Text className="text-center font-geistBold text-4xl text-primaryDark">{user?.name}</Text>
       <TouchableOpacity
         onPress={handleLogout}
         className="rounded-lg bg-primary p-4"
         accessibilityRole="button"
         accessibilityLabel="Logout from your account">
-        <Text className="font-geistMedium text-center text-base text-white">Logout</Text>
+        <Text className="text-center font-geistMedium text-base text-white">Logout</Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </Container>
   );
 }

@@ -1,18 +1,36 @@
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { ArrowLeft, Bell } from 'lucide-react-native';
-import React from 'react';
-import { Image, Pressable, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
 
-export default function Header() {
+interface HeaderProps {
+  goBack?: boolean;
+  page: string;
+}
+
+const Header = ({ goBack, page }: HeaderProps) => {
   return (
-    <View className="flex w-full flex-row items-center justify-between rounded-full bg-[#D7E4DE]/60 px-4 py-3">
-      <Pressable onPress={() => router.back()}>
-        <ArrowLeft className="size-5 text-primaryDark" color="black" />
-      </Pressable>
-      <Image source={require('../assets/logo.png')} className="h-9" resizeMode="contain" />
-      <Pressable>
-        <Bell className="size-5 text-primaryDark" color="black" />
-      </Pressable>
+    <View className="shadow-xs flex flex-row items-center justify-between rounded-full bg-primary/10 px-4 py-3">
+      {goBack ? (
+        <Pressable onPress={() => router.back()}>
+          <ArrowLeft size={24} />
+        </Pressable>
+      ) : (
+        <View className="size-6" />
+      )}
+
+      {page === 'home' ? (
+        <Image source={require('../assets/logo.png')} className="h-9" resizeMode="contain" />
+      ) : (
+        <Text className="font-geistSemiBold text-2xl capitalize text-primaryDark">{page}</Text>
+      )}
+
+      <Link href="/notifications" asChild>
+        <Pressable>
+          <Bell size={24} />
+        </Pressable>
+      </Link>
     </View>
   );
-}
+};
+
+export default Header;
