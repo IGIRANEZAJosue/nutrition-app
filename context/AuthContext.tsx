@@ -1,13 +1,15 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, SafeAreaView } from 'react-native';
-import { Models } from 'react-native-appwrite';
+import { ID, Models } from 'react-native-appwrite';
 
 import { account } from '~/lib/appWriteConfig';
-import { loginUserDto } from '~/utils/api';
+import { loginUserDto, signupUserDto } from '~/utils/api';
+
 interface AuthContextType {
   session: Models.Session | null;
   user: Models.User<object> | null;
   signin: (data: loginUserDto) => Promise<void>;
+  signup: (data: signupUserDto) => Promise<void>;
   signout: () => Promise<void>;
 }
 
@@ -15,6 +17,7 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   user: null,
   signin: async (data: loginUserDto) => {},
+  signup: async (data: signupUserDto) => {},
   signout: async () => {},
 });
 
@@ -59,6 +62,24 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   };
 
+  const signup = async ({ email, password, name }: signupUserDto) => {
+    setLoading(true);
+    try {
+      const newUser = await account.create(ID.unique(), email, password, name);
+
+      if (!newUser) throw new Error('User creation failed');
+
+      // Automatically sign in the user after successful signup
+      const session = await account.createEmailPasswordSession(email, password);
+      setSession(session);
+      setUser(newUser);
+    } catch (error) {
+      console.error('Signup error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const signout = async () => {
     setLoading(true);
 
@@ -69,7 +90,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   };
 
-  const contextData = { session, user, signin, signout };
+  const contextData = { session, user, signin, signup, signout };
 
   return (
     <AuthContext.Provider value={contextData}>

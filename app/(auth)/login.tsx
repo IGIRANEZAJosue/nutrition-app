@@ -56,7 +56,7 @@ const Login = () => {
           </TouchableOpacity>
         </View>
 
-        <Text className="mb-12 mt-4 text-center text-sm text-gray-500">
+        <Text className="mb-5 mt-4 text-center text-sm text-gray-500">
           Don't have an account?{' '}
           <Text onPress={() => router.push('/signup')} className="text-primary">
             Sign up
