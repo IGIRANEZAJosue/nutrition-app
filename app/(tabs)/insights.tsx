@@ -56,7 +56,7 @@ const Insights = () => {
           />
           <AnalysisCard
             icon={<Heart size={20} color="white" accessibilityLabel="Heart rate icon" />}
-            bgColor="bg-primaryLight"
+            bgColor="bg-[#EC4899]"
             title="Heart Rate Variability"
             description="Your stress levels are lower than usual"
           />
