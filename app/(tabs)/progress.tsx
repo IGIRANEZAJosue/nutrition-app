@@ -1,14 +1,21 @@
+import { Plus } from 'lucide-react-native';
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { Container } from '~/components/Container';
 
 const Progress = () => {
   return (
     <Container page="progress">
-      <Text className="text-center font-geistBold text-3xl text-primaryDark">
-        There's no active progress
-      </Text>
+      <View className="my-4">
+        <View className="flex-row items-center justify-between">
+          <Text className="font-geistSemiBold text-xl">Your Goals</Text>
+          <View className="size-8 items-center justify-center rounded-full bg-primary">
+            <Plus color="white" size={16} />
+          </View>
+        </View>
+        <View></View>
+      </View>
     </Container>
   );
 };
