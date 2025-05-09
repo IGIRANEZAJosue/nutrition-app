@@ -4,6 +4,7 @@ import { Image, Text, View } from 'react-native';
 
 import { Container } from '~/components/Container';
 import AnalysisCard from '~/components/cards/AnalysisCard';
+import RecommendedRecipes from '~/components/sections/RecommendedRecipes';
 
 const Insights = () => {
   return (
@@ -38,6 +39,8 @@ const Insights = () => {
           </View>
         </View>
       </View>
+
+      <RecommendedRecipes />
 
       <View>
         <Text className="mt-4 font-geistSemiBold text-xl">Today's Analysis</Text>
