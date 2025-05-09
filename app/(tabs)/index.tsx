@@ -1,8 +1,8 @@
 import { Text, View } from 'react-native';
 
-import ActivityCard from '~/components/ActivityCard';
 import CircularProgressBar from '~/components/CircularProgressBar';
 import { Container } from '~/components/Container';
+import ActivityCard from '~/components/cards/ActivityCard';
 import { useAuth } from '~/context/AuthContext';
 
 export default function Home() {

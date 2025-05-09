@@ -1,6 +1,7 @@
 import { useFonts } from 'expo-font';
 import '../global.css';
 import { Stack } from 'expo-router';
+
 import { AuthProvider } from '~/context/AuthContext';
 
 export const unstable_settings = {

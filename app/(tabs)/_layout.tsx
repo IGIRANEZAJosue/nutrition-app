@@ -18,26 +18,44 @@ export default function TabLayout() {
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
         },
+        sceneStyle: {
+          backgroundColor: 'white',
+        },
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <House size={24} color={color} />,
+          tabBarIcon: ({ color, focused }) =>
+            focused ? (
+              <House size={24} color={color} fill={color} />
+            ) : (
+              <House size={24} color="gray" />
+            ),
         }}
       />
       <Tabs.Screen
         name="insights"
         options={{
           title: 'Insights',
-          tabBarIcon: ({ color }) => <Lightbulb size={24} color={color} />,
+          tabBarIcon: ({ color, focused }) =>
+            focused ? (
+              <Lightbulb size={24} color={color} fill={color} />
+            ) : (
+              <Lightbulb size={24} color="gray" />
+            ),
         }}
       />
       <Tabs.Screen
         name="progress"
         options={{
           title: 'Progress',
-          tabBarIcon: ({ color }) => <HeartPulse size={24} color={color} />,
+          tabBarIcon: ({ color, focused }) =>
+            focused ? (
+              <HeartPulse size={28} color="white" fill={color} />
+            ) : (
+              <HeartPulse size={24} color="gray" />
+            ),
         }}
       />
       <Tabs.Screen
