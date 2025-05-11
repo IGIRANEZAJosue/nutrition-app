@@ -19,7 +19,12 @@ const Header = ({ goBack, page }: HeaderProps) => {
       )}
 
       {page === 'home' ? (
-        <Image source={require('../assets/logo.png')} className="h-9" resizeMode="contain" />
+        <Image
+          source={require('../assets/logo.png')}
+          className="h-9"
+          style={{ height: 36 }}
+          resizeMode="contain"
+        />
       ) : (
         <Text className="font-geistSemiBold text-2xl capitalize text-primaryDark">{page}</Text>
       )}
