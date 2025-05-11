@@ -38,6 +38,8 @@ export default function Profile() {
           source={{ uri: profileData.avatarUrl }}
           className="mb-4 h-28 w-28 rounded-full border-2 border-gray-200"
           accessibilityLabel="Profile picture"
+          onError={(e) => console.log('Error loading profile image:', e.nativeEvent.error)}
+          defaultSource={require('~/assets/logo.png')}
         />
         <Text className="font-geistBold text-2xl text-gray-800">{profileData.name}</Text>
       </View>
