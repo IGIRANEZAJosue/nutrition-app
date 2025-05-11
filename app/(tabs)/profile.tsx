@@ -1,5 +1,5 @@
 import { ChevronRight, LogOut } from 'lucide-react-native';
-import { Text, TouchableOpacity, View, Image, ScrollView } from 'react-native';
+import { Text, TouchableOpacity, View, Image } from 'react-native';
 
 import { Container } from '~/components/Container';
 import ProfileStatCard from '~/components/cards/ProfileStatCard';
@@ -33,57 +33,55 @@ export default function Profile() {
 
   return (
     <Container page="profile">
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="pb-8">
-        <View className="mb-4 items-center pb-6 pt-8">
-          <Image
-            source={{ uri: profileData.avatarUrl }}
-            className="mb-4 h-28 w-28 rounded-full border-2 border-gray-200"
-            accessibilityLabel="Profile picture"
-          />
-          <Text className="font-geistBold text-2xl text-gray-800">{profileData.name}</Text>
-        </View>
+      <View className="mb-4 items-center pb-6 pt-8">
+        <Image
+          source={{ uri: profileData.avatarUrl }}
+          className="mb-4 h-28 w-28 rounded-full border-2 border-gray-200"
+          accessibilityLabel="Profile picture"
+        />
+        <Text className="font-geistBold text-2xl text-gray-800">{profileData.name}</Text>
+      </View>
 
-        {/* Stats Section */}
-        <View className="mb-6 flex-row flex-wrap justify-between">
-          <ProfileStatCard icon="📏" label="Height" value={profileData.height} />
-          <ProfileStatCard icon="⚖️" label="Weight" value={profileData.weight} />
-          <ProfileStatCard icon="🧠" label="Age" value={profileData.age} />
-          <ProfileStatCard icon="🏃" label="Fitness Level" value={profileData.fitnessLevel} />
-        </View>
+      {/* Stats Section */}
+      <View className="mb-6 flex-row flex-wrap justify-between">
+        <ProfileStatCard icon="📏" label="Height" value={profileData.height} />
+        <ProfileStatCard icon="⚖️" label="Weight" value={profileData.weight} />
+        <ProfileStatCard icon="🧠" label="Age" value={profileData.age} />
+        <ProfileStatCard icon="🏃" label="Fitness Level" value={profileData.fitnessLevel} />
+      </View>
 
-        {/* Settings List */}
-        <View className="mb-6">
-          {settingsItems.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              className="mb-3 flex-row items-center justify-between rounded-xl border border-gray-300 p-4"
-              accessibilityRole="button"
-              accessibilityLabel={item.label}
-              onPress={() => {
-                // router.push(item.screen); // Uncomment to enable navigation
-                console.log('Navigate to', item.label);
-              }}>
-              <View className="flex-row items-center">
-                <Text className="mr-3 text-xl">{item.icon}</Text>
-                <Text className="font-geistRegular text-base text-gray-800">{item.label}</Text>
-              </View>
-              <ChevronRight color="gray" />
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Log Out Button */}
-        <View className="px-4">
+      {/* Settings List */}
+      <View className="mb-6">
+        {settingsItems.map((item) => (
           <TouchableOpacity
-            onPress={handleLogout}
-            className="mt-2 flex-row items-center justify-center space-x-2 bg-primaryLight/10 px-4 py-3"
+            key={item.id}
+            className="mb-3 flex-row items-center justify-between rounded-xl border border-gray-300 p-4"
             accessibilityRole="button"
-            accessibilityLabel="Log Out">
-            <LogOut color="red" />
-            <Text className="text-center font-geistMedium text-base text-red-500">Log Out</Text>
+            accessibilityLabel={item.label}
+            onPress={() => {
+              // router.push(item.screen); // Uncomment to enable navigation
+              console.log('Navigate to', item.label);
+            }}>
+            <View className="flex-row items-center">
+              <Text className="mr-3 text-xl">{item.icon}</Text>
+              <Text className="font-geistRegular text-base text-gray-800">{item.label}</Text>
+            </View>
+            <ChevronRight color="gray" />
           </TouchableOpacity>
-        </View>
-      </ScrollView>
+        ))}
+      </View>
+
+      {/* Log Out Button */}
+      <View className="px-4">
+        <TouchableOpacity
+          onPress={handleLogout}
+          className="mt-2 flex-row items-center justify-center space-x-2 bg-primaryLight/10 px-4 py-3"
+          accessibilityRole="button"
+          accessibilityLabel="Log Out">
+          <LogOut color="red" />
+          <Text className="text-center font-geistMedium text-base text-red-500">Log Out</Text>
+        </TouchableOpacity>
+      </View>
     </Container>
   );
 }
