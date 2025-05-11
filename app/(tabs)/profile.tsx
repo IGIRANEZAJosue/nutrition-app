@@ -34,16 +34,13 @@ export default function Profile() {
   return (
     <Container page="profile">
       <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="pb-8">
-        <View className="items-center pb-6 pt-8">
+        <View className="mb-4 items-center pb-6 pt-8">
           <Image
             source={{ uri: profileData.avatarUrl }}
             className="mb-4 h-28 w-28 rounded-full border-2 border-gray-200"
             accessibilityLabel="Profile picture"
           />
           <Text className="font-geistBold text-2xl text-gray-800">{profileData.name}</Text>
-          <Text className="mt-1 font-geistRegular text-sm text-gray-500">
-            {profileData.membership}
-          </Text>
         </View>
 
         {/* Stats Section */}
