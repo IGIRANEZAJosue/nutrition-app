@@ -2,6 +2,7 @@ import { ChevronRight, LogOut } from 'lucide-react-native';
 import { Text, TouchableOpacity, View, Image, ScrollView } from 'react-native';
 
 import { Container } from '~/components/Container';
+import ProfileStatCard from '~/components/cards/ProfileStatCard';
 import { useAuth } from '~/context/AuthContext';
 
 export default function Profile() {
@@ -47,24 +48,10 @@ export default function Profile() {
 
         {/* Stats Section */}
         <View className="mb-6 flex-row flex-wrap justify-between">
-          <View className="mb-4 w-[48%] rounded-xl border border-gray-300 p-3">
-            <Text className="mb-1 font-geistRegular text-xs text-gray-500">📏 Height</Text>
-            <Text className="font-geistSemiBold text-lg text-gray-800">{profileData.height}</Text>
-          </View>
-          <View className="mb-4 w-[48%] rounded-xl border border-gray-300 p-3">
-            <Text className="mb-1 font-geistRegular text-xs text-gray-500">⚖️ Weight</Text>
-            <Text className="font-geistSemiBold text-lg text-gray-800">{profileData.weight}</Text>
-          </View>
-          <View className="mb-4 w-[48%] rounded-xl border border-gray-300 p-3">
-            <Text className="mb-1 font-geistRegular text-xs text-gray-500">🧠 Age</Text>
-            <Text className="font-geistSemiBold text-lg text-gray-800">{profileData.age}</Text>
-          </View>
-          <View className="mb-4 w-[48%] rounded-xl border border-gray-300 p-3">
-            <Text className="mb-1 font-geistRegular text-xs text-gray-500">🏃 Fitness Level</Text>
-            <Text className="font-geistSemiBold text-lg text-gray-800">
-              {profileData.fitnessLevel}
-            </Text>
-          </View>
+          <ProfileStatCard icon="📏" label="Height" value={profileData.height} />
+          <ProfileStatCard icon="⚖️" label="Weight" value={profileData.weight} />
+          <ProfileStatCard icon="🧠" label="Age" value={profileData.age} />
+          <ProfileStatCard icon="🏃" label="Fitness Level" value={profileData.fitnessLevel} />
         </View>
 
         {/* Settings List */}
@@ -88,13 +75,13 @@ export default function Profile() {
           ))}
         </View>
 
-        {/* Sign Out Button */}
+        {/* Log Out Button */}
         <View className="px-4">
           <TouchableOpacity
             onPress={handleLogout}
-            className="mt-2 flex-row items-center justify-center space-x-2 bg-gray-100 px-4 py-3"
+            className="mt-2 flex-row items-center justify-center space-x-2 bg-primaryLight/10 px-4 py-3"
             accessibilityRole="button"
-            accessibilityLabel="Sign Out">
+            accessibilityLabel="Log Out">
             <LogOut color="red" />
             <Text className="text-center font-geistMedium text-base text-red-500">Log Out</Text>
           </TouchableOpacity>
