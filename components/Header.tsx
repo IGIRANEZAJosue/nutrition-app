@@ -1,5 +1,6 @@
 import { Link, router } from 'expo-router';
 import { ArrowLeft, Bell } from 'lucide-react-native';
+import React from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 
 interface HeaderProps {
@@ -9,7 +10,7 @@ interface HeaderProps {
 
 const Header = ({ goBack, page }: HeaderProps) => {
   return (
-    <View className="shadow-xs flex flex-row items-center justify-between rounded-full bg-primary/10 px-4 py-3">
+    <View className="shadow-xs flex flex-row items-center justify-between rounded-full bg-primary/10 px-4 py-4">
       {goBack ? (
         <Pressable onPress={() => router.back()}>
           <ArrowLeft size={24} />
