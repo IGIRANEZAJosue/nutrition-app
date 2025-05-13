@@ -47,6 +47,14 @@
     "tailwindcss": "^3.4.0",
     "typescript": "~5.8.3"
   },
+
+  "overrides": {
+    "react-native-appwrite": {
+      "expo-file-system": "18.*.*",
+      "react-native": ">=0.76.7 <1.0.0"
+    }
+  },
+
   "eslintConfig": {
     "extends": "universe/native",
     "root": true
