@@ -1,5 +1,6 @@
 import { Redirect, Tabs } from 'expo-router';
 import { HeartPulse, House, Lightbulb, UserRound } from 'lucide-react-native';
+import React from 'react';
 
 import { useAuth } from '~/context/AuthContext';
 
@@ -15,8 +16,8 @@ export default function TabLayout() {
         tabBarActiveTintColor: '#22C55E',
         tabBarInactiveTintColor: 'gray',
         tabBarStyle: {
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
         },
         sceneStyle: {
           backgroundColor: 'white',

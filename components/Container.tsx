@@ -8,7 +8,9 @@ export const Container = ({ children, page }: { children: React.ReactNode; page?
   return (
     <SafeAreaView className={`${styles.container}`}>
       <Header page={page || 'home'} goBack={page !== 'home'} />
-      <ScrollView showsVerticalScrollIndicator={false}>{children}</ScrollView>
+      <ScrollView style={{ flex: 1, height: '100%' }} showsVerticalScrollIndicator={false}>
+        {children}
+      </ScrollView>
     </SafeAreaView>
   );
 };
