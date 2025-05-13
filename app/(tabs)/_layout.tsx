@@ -16,8 +16,8 @@ export default function TabLayout() {
         tabBarActiveTintColor: '#22C55E',
         tabBarInactiveTintColor: 'gray',
         tabBarStyle: {
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
         },
         sceneStyle: {
           backgroundColor: 'white',
