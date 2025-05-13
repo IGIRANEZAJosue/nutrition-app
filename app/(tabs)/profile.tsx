@@ -1,4 +1,5 @@
 import { ChevronRight, LogOut } from 'lucide-react-native';
+import React from 'react';
 import { Text, TouchableOpacity, View, Image } from 'react-native';
 
 import { Container } from '~/components/Container';
@@ -74,16 +75,15 @@ export default function Profile() {
       </View>
 
       {/* Log Out Button */}
-      <View className="px-4">
-        <TouchableOpacity
-          onPress={handleLogout}
-          className="mt-2 flex-row items-center justify-center space-x-2 rounded-lg bg-red-50 px-4 py-3"
-          accessibilityRole="button"
-          accessibilityLabel="Log Out">
-          <LogOut color="red" />
-          <Text className="text-center font-geistMedium text-base text-red-500">Log Out</Text>
-        </TouchableOpacity>
-      </View>
+
+      <TouchableOpacity
+        onPress={handleLogout}
+        className="mt-2 flex-row items-center justify-center space-x-2 rounded-lg bg-red-50 px-4 py-3"
+        accessibilityRole="button"
+        accessibilityLabel="Log Out">
+        <LogOut color="red" />
+        <Text className="text-center font-geistMedium text-base text-red-500">Log Out</Text>
+      </TouchableOpacity>
     </Container>
   );
 }
