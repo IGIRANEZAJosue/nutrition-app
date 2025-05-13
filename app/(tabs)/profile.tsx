@@ -78,7 +78,7 @@ export default function Profile() {
 
       <TouchableOpacity
         onPress={handleLogout}
-        className="mt-2 flex-row items-center justify-center space-x-2 rounded-lg bg-red-50 px-4 py-3"
+        className="mt-2 flex-row items-center justify-center space-x-2 rounded-lg bg-red-50 p-4"
         accessibilityRole="button"
         accessibilityLabel="Log Out">
         <LogOut color="red" />
