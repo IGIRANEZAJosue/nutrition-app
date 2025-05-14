@@ -2,6 +2,7 @@ import { Link, router } from 'expo-router';
 import { ArrowLeft, Bell } from 'lucide-react-native';
 import React from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
+
 import BellDot from '~/assets/BellDot';
 
 interface HeaderProps {
