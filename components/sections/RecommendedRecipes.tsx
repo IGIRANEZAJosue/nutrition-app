@@ -3,10 +3,10 @@ import { Image, Text, View } from 'react-native';
 
 const RecommendedRecipes = () => {
   return (
-    <View className="my-5 space-y-4 rounded-xl bg-primary/10 p-4">
+    <View className="my-5 gap-4 rounded-xl">
       <Text className="font-geistSemiBold text-xl">Recommended Recipes</Text>
-      <View className="space-y-4">
-        <View className="flex-row items-center gap-4">
+      <View className="gap-4">
+        <View className="flex-row gap-4">
           <Image
             source={require('../../assets/banana-image.png')}
             style={{ width: 80, height: 80, borderRadius: 8 }}
@@ -19,7 +19,7 @@ const RecommendedRecipes = () => {
           </View>
         </View>
 
-        <View className="flex-row items-center gap-4">
+        <View className="flex-row gap-4">
           <Image
             source={require('../../assets/oats-image.png')}
             style={{ width: 80, height: 80, borderRadius: 8 }}
@@ -32,7 +32,7 @@ const RecommendedRecipes = () => {
           </View>
         </View>
 
-        <View className="flex-row items-center gap-4">
+        <View className="flex-row gap-4">
           <Image
             source={require('../../assets/dough-image.png')}
             style={{ width: 80, height: 80, borderRadius: 8 }}
@@ -45,7 +45,7 @@ const RecommendedRecipes = () => {
           </View>
         </View>
 
-        <View className="flex-row items-center gap-4">
+        <View className="flex-row gap-4">
           <Image
             source={require('../../assets/oats-image.png')}
             style={{ width: 80, height: 80, borderRadius: 8 }}
@@ -58,7 +58,7 @@ const RecommendedRecipes = () => {
           </View>
         </View>
 
-        <View className="flex-row items-center gap-4">
+        <View className="flex-row gap-4">
           <Image
             source={require('../../assets/dough-image.png')}
             style={{ width: 80, height: 80, borderRadius: 8 }}
@@ -71,7 +71,7 @@ const RecommendedRecipes = () => {
           </View>
         </View>
 
-        <View className="flex-row items-center gap-4">
+        <View className="flex-row gap-4">
           <Image
             source={require('../../assets/banana-image.png')}
             style={{ width: 80, height: 80, borderRadius: 8 }}

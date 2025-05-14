@@ -1,5 +1,6 @@
 import { Redirect, Tabs } from 'expo-router';
 import { HeartPulse, House, Lightbulb, UserRound } from 'lucide-react-native';
+import React from 'react';
 
 import { useAuth } from '~/context/AuthContext';
 
