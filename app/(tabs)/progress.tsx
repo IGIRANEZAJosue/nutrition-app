@@ -78,8 +78,8 @@ const Progress = () => {
         </View>
 
         {/* Weight Loss Chart */}
-        <View className="mb-6 mt-4 rounded-xl bg-white shadow-sm">
-          <Text className="mb-4 font-geistSemiBold text-lg">Weight Progress</Text>
+        <View className="mb-6 mt-4 rounded-xl border border-gray-200 bg-white">
+          <Text className="p-4 font-geistSemiBold text-lg">Weight Progress</Text>
           <LineChart
             data={weightData}
             width={Dimensions.get('window').width}
