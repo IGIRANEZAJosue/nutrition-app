@@ -2,11 +2,25 @@ import { Link, router } from 'expo-router';
 import { ArrowLeft, Bell } from 'lucide-react-native';
 import React from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
+import BellDot from '~/assets/BellDot';
 
 interface HeaderProps {
   goBack?: boolean;
   page: string;
 }
+
+const notifications = [
+  {
+    id: 1,
+    title: 'New message',
+    message: 'You have a new message',
+  },
+  {
+    id: 2,
+    title: 'New message',
+    message: 'You have a new message',
+  },
+];
 
 const Header = ({ goBack, page }: HeaderProps) => {
   return (
@@ -31,9 +45,7 @@ const Header = ({ goBack, page }: HeaderProps) => {
       )}
 
       <Link href="/notifications" asChild>
-        <Pressable>
-          <Bell size={24} />
-        </Pressable>
+        <Pressable>{notifications.length > 0 ? <BellDot /> : <Bell />}</Pressable>
       </Link>
     </View>
   );
