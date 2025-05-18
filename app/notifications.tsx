@@ -37,8 +37,14 @@ const Notifications = () => {
       <View className="flex-1">
         <FlatList
           data={notifications}
+          keyExtractor={(item) => item.id.toString()}
+          ListEmptyComponent={() => (
+            <View className="flex items-center justify-center py-8">
+              <Text className="font-geistMedium text-base text-gray-500">No new notifications</Text>
+            </View>
+          )}
           renderItem={({ item }) => (
-            <View className="my-4 flex w-full flex-row items-start gap-4">
+            <View className="my-6 flex w-full flex-row items-start gap-4">
               <View className="flex size-12 items-center justify-center rounded-lg bg-[#D7E4DE]/60">
                 <Bell size={20} color="#064431" />
               </View>
