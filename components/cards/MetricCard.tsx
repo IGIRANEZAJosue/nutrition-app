@@ -4,14 +4,14 @@ import { Text, View } from 'react-native';
 
 import CircularProgressBar from '../CircularProgressBar';
 
-interface ActivityCardProps {
+interface MetricCardProps {
   title: string;
   value: number;
   target: number;
   percentage: number;
 }
 
-const ActivityCard = ({ title, value, target, percentage }: ActivityCardProps) => {
+const MetricCard = ({ title, value, target, percentage }: MetricCardProps) => {
   return (
     <View className="w-full flex-row items-center justify-between rounded-2xl border border-gray-300 bg-white p-4">
       <View className="gap-4">
@@ -29,4 +29,4 @@ const ActivityCard = ({ title, value, target, percentage }: ActivityCardProps) =
   );
 };
 
-export default ActivityCard;
+export default MetricCard;
