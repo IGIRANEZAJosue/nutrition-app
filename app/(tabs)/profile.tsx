@@ -58,7 +58,7 @@ export default function Profile() {
         {settingsItems.map((item) => (
           <TouchableOpacity
             key={item.id}
-            className="mb-3 flex-row items-center justify-between rounded-xl border border-gray-300 p-4"
+            className="mb-3 flex-row items-center justify-between rounded-xl border border-gray-200 p-4"
             accessibilityRole="button"
             accessibilityLabel={item.label}
             onPress={() => {
