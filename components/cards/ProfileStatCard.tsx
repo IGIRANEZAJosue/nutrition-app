@@ -1,3 +1,4 @@
+import React from 'react';
 import { Text, View } from 'react-native';
 
 interface ProfileStatCardProps {
@@ -7,7 +8,7 @@ interface ProfileStatCardProps {
 }
 
 const ProfileStatCard = ({ icon, label, value }: ProfileStatCardProps) => (
-  <View className="mb-4 w-[48%] rounded-xl border border-gray-300 p-3">
+  <View className="mb-4 w-[48%] rounded-xl border border-gray-200 bg-[#F8F9FA] p-3">
     <Text className="mb-1 font-geistRegular text-xs text-gray-500">
       {icon} {label}
     </Text>
