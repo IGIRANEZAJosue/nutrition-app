@@ -77,6 +77,28 @@ const Progress = () => {
           ))}
         </View>
 
+        {/* Nutrition Stats */}
+        <View className="mb-6 mt-4 rounded-xl border border-gray-200 bg-white p-4">
+          <Text className="font-geistSemiBold text-lg">Nutrition</Text>
+          <View className="mt-4 flex-row justify-between">
+            <View>
+              <Text className="text-gray-600">Carbs</Text>
+              <Text className="font-geistSemiBold text-xl">180g</Text>
+              <Text className="text-sm text-gray-500">of 250g</Text>
+            </View>
+            <View>
+              <Text className="text-gray-600">Protein</Text>
+              <Text className="font-geistSemiBold text-xl">75g</Text>
+              <Text className="text-sm text-gray-500">of 90g</Text>
+            </View>
+            <View>
+              <Text className="text-gray-600">Fat</Text>
+              <Text className="font-geistSemiBold text-xl">45g</Text>
+              <Text className="text-sm text-gray-500">of 65g</Text>
+            </View>
+          </View>
+        </View>
+
         {/* Weight Loss Chart */}
         <View className="mb-6 mt-4 rounded-xl border border-gray-200 bg-white">
           <Text className="p-4 font-geistSemiBold text-lg">Weight Progress</Text>
