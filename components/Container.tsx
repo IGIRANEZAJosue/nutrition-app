@@ -7,7 +7,7 @@ import Header from './Header';
 export const Container = ({ children, page }: { children: React.ReactNode; page?: string }) => {
   return (
     <SafeAreaView className={`${styles.container}`}>
-      <Header page={page || 'home'} goBack={page !== 'home'} />
+      <Header page={page ?? 'home'} goBack={page !== 'home'} />
       <ScrollView showsVerticalScrollIndicator={false} contentInset={{ bottom: 50 }}>
         <View className="flex-1">{children}</View>
       </ScrollView>
