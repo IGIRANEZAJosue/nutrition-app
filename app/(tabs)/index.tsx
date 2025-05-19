@@ -19,7 +19,7 @@ export default function Home() {
         </View>
         <View className="my-6 gap-4">
           <RingProgress progress={0.7} radius={100} color="#10C875" />
-          <Text className="text-center font-geistMedium text-lg text-gray-600">
+          <Text className="text-center font-geistRegular text-lg ">
             You've burned 1000 calories today
           </Text>
         </View>
