@@ -10,7 +10,7 @@ export default function Home() {
   const { user } = useAuth();
 
   return (
-    <Container>
+    <Container page="home">
       <View className="my-4 gap-4">
         <View>
           <Text className="font-geistMedium text-2xl text-gray-600">Hello,</Text>
