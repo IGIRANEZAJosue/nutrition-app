@@ -20,7 +20,7 @@ export default function TabLayout() {
           borderTopRightRadius: 20,
           paddingTop: 10,
           paddingBottom: 10,
-          height: 70,
+          height: 70
         },
         sceneStyle: {
           backgroundColor: 'white',
