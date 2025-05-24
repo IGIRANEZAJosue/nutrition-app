@@ -4,7 +4,7 @@
     "slug": "my-nutri-app",
     "version": "1.0.0",
     "scheme": "my-nutri-app",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -12,7 +12,12 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font", 
+      ["expo-build-properties", { 
+        "android": {
+          "minSdkVersion": 26
+        }
+      }]
     ],
     "experiments": {
       "typedRoutes": true,
@@ -37,12 +42,12 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.igiraneza_j.mynutriapp"
+      "package": "com.igiraneza_j.mynutriapp",
     },
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "29d09d26-0061-4a97-a488-63351104b536"
+        "projectId": "339c61a9-4c3b-43c2-92b6-4cff61b0289c"
       }
     }
   }
