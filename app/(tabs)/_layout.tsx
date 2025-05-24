@@ -18,6 +18,9 @@ export default function TabLayout() {
         tabBarStyle: {
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
+          paddingTop: 10,
+          paddingBottom: 10,
+          height: 70,
         },
         sceneStyle: {
           backgroundColor: 'white',
