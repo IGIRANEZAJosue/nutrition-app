@@ -1,5 +1,5 @@
 import { Platform } from 'react-native';
-import { Client, Account } from 'react-native-appwrite';
+import { Client, Account, Storage } from 'react-native-appwrite';
 
 const client = new Client()
   .setEndpoint(process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT || 'api endpoint')
@@ -18,4 +18,6 @@ switch (Platform.OS) {
 
 const account = new Account(client);
 
-export { account };
+const storage = new Storage(client);
+
+export { account, storage };

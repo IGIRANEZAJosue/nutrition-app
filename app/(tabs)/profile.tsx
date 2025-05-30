@@ -1,4 +1,4 @@
-import { ChevronRight, LogOut } from 'lucide-react-native';
+import { ChevronRight, LogOut, Pen } from 'lucide-react-native';
 import React from 'react';
 import { Text, TouchableOpacity, View, Image } from 'react-native';
 
@@ -35,13 +35,21 @@ export default function Profile() {
   return (
     <Container page="profile">
       <View className="mb-4 items-center pb-6 pt-8">
-        <Image
-          source={{ uri: profileData.avatarUrl }}
-          className="mb-4 h-28 w-28 rounded-full border-2 border-gray-200"
-          accessibilityLabel="Profile picture"
-          onError={(e) => console.log('Error loading profile image:', e.nativeEvent.error)}
-          defaultSource={require('~/assets/logo.png')}
-        />
+        <View className="relative">
+          <Image
+            source={{ uri: profileData.avatarUrl }}
+            className="mb-4 h-28 w-28 rounded-full border-2 border-gray-200"
+            accessibilityLabel="Profile picture"
+            onError={(e) => console.log('Error loading profile image:', e.nativeEvent.error)}
+            defaultSource={require('~/assets/logo.png')}
+          />
+          <TouchableOpacity
+            className="absolute -right-2 -top-1 size-10 items-center justify-center rounded-full border border-gray-200 bg-gray-100"
+            onPress={() => console.log('Edit profile')}
+            accessibilityLabel="Edit profile">
+            <Pen color="gray" size={16} />
+          </TouchableOpacity>
+        </View>
         <Text className="font-geistBold text-2xl text-gray-800">{profileData.name}</Text>
       </View>
 
