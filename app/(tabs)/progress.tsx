@@ -1,7 +1,6 @@
 import { PersonStanding, Plus, Ruler } from 'lucide-react-native';
 import React from 'react';
 import { Text, View, Dimensions } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
 
 import { Container } from '~/components/Container';
 import GoalCard from '~/components/cards/GoalCard';
@@ -100,7 +99,7 @@ const Progress = () => {
         </View>
 
         {/* Weight Loss Chart */}
-        <View className="mb-6 mt-4 rounded-xl border border-gray-200 bg-white">
+        {/* <View className="mb-6 mt-4 rounded-xl border border-gray-200 bg-white">
           <Text className="p-4 font-geistSemiBold text-lg">Weight Progress</Text>
           <LineChart
             data={weightData}
@@ -110,7 +109,7 @@ const Progress = () => {
             chartConfig={chartConfig}
             bezier
           />
-        </View>
+        </View> */}
       </View>
     </Container>
   );

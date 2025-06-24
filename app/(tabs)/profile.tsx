@@ -1,4 +1,5 @@
-import { ChevronRight, LogOut } from 'lucide-react-native';
+import { ChevronRight, LogOut, PenSquare } from 'lucide-react-native';
+import { router } from 'expo-router';
 import React from 'react';
 import { Text, TouchableOpacity, View, Image } from 'react-native';
 
@@ -15,13 +16,13 @@ export default function Profile() {
 
   // Placeholder data from the image
   const profileData = {
-    name: user?.name || 'Sarah Anderson',
+    name: user?.name || 'John Doe',
     membership: 'Premium Member',
     avatarUrl: 'https://avatars.githubusercontent.com/u/88510074?v=4',
-    height: '165 cm',
-    weight: '58 kg',
-    age: '28',
-    fitnessLevel: 'Intermediate',
+    height: user?.prefs?.height || '165 cm',
+    weight: user?.prefs?.weight || '58 kg',
+    age: user?.prefs?.age || '28',
+    fitnessLevel: user?.prefs?.fitnessLevel || 'Intermediate',
   };
 
   const settingsItems = [
@@ -34,7 +35,7 @@ export default function Profile() {
 
   return (
     <Container page="profile">
-      <View className="mb-4 items-center pb-6 pt-8">
+      <View className="mb-6 items-center pt-8">
         <Image
           source={{ uri: profileData.avatarUrl }}
           className="mb-4 h-28 w-28 rounded-full border-2 border-gray-200"
@@ -42,7 +43,13 @@ export default function Profile() {
           onError={(e) => console.log('Error loading profile image:', e.nativeEvent.error)}
           defaultSource={require('~/assets/logo.png')}
         />
-        <Text className="font-geistBold text-2xl text-gray-800">{profileData.name}</Text>
+        <View className="flex-row items-center gap-2">
+          <Text className="font-geistBold text-2xl text-gray-800">{profileData.name}</Text>
+          <TouchableOpacity onPress={() => router.push('/modal')}>
+            <PenSquare color="gray" />
+          </TouchableOpacity>
+        </View>
+        <Text className="mt-2 font-geistMedium text-sm">{profileData.fitnessLevel}</Text>
       </View>
 
       {/* Stats Section */}
