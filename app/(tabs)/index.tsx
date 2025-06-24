@@ -49,7 +49,6 @@ export default function Home() {
   console.log('scoreData', JSON.stringify(scoreData, null, 2));
 
   const [stats, setStats] = useState<Activity[]>([]);
-  const [activityStats, setActivityStats] = useState<null>(null);
   const [loading, setLoading] = useState(false);
 
   const getStateColor = (state: string) => {
@@ -93,7 +92,8 @@ export default function Home() {
       )
         .then((response) => response.json())
         .then((data) => setStats(data))
-        .catch((error) => console.error('Error:', error));
+        .catch((error) => console.error('Error:', error))
+        .finally(() => setLoading(false));
     };
 
     if (authentication.authenticated) {
@@ -237,16 +237,18 @@ export default function Home() {
         {/* Health Stats Cards  */}
         <HealthStatsCards />
 
-        {stats[0]?.factors.map((factor) => (
-          <MetricCard
-            key={factor.id}
-            title={factor.name.split('_').join(' ')}
-            value={factor.value}
-            target={factor.goal}
-            unit={factor.unit}
-            color={getStateColor(factor.state)}
-          />
-        ))}
+        {loading && <Text>Loading...</Text>}
+        {!loading &&
+          stats[0]?.factors.map((factor) => (
+            <MetricCard
+              key={factor.id}
+              title={factor.name.split('_').join(' ')}
+              value={factor.value}
+              target={factor.goal}
+              unit={factor.unit}
+              color={getStateColor(factor.state)}
+            />
+          ))}
       </View>
     </Container>
   );

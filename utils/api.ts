@@ -50,3 +50,16 @@ export interface TypedActivityFactor extends Omit<ActivityFactor, 'name' | 'unit
 export interface TypedActivity extends Omit<Activity, 'factors'> {
   factors: TypedActivityFactor[];
 }
+
+export interface Biomarker {
+  id: string;
+  category: string;
+  type: string;
+  periodicity: string;
+  aggregation: string;
+  value: string;
+  unit: string;
+  valueType: string;
+  startDateTime: string;
+  endDateTime: string;
+}
