@@ -1,4 +1,12 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from 'react';
 import { ActivityIndicator, SafeAreaView } from 'react-native';
 import { ID, Models } from 'react-native-appwrite';
 
@@ -55,7 +63,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const signin = async ({ email, password }: loginUserDto) => {
+  const signin = useCallback(async ({ email, password }: loginUserDto) => {
     setLoading(true);
 
     try {
@@ -69,9 +77,9 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     setLoading(false);
-  };
+  }, []);
 
-  const signup = async ({ email, password, name }: signupUserDto) => {
+  const signup = useCallback(async ({ email, password, name }: signupUserDto) => {
     setLoading(true);
     try {
       const newUser = await account.create(ID.unique(), email, password, name);
@@ -87,9 +95,9 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const signout = async () => {
+  const signout = useCallback(async () => {
     setLoading(true);
 
     await account.deleteSession('current');
@@ -97,18 +105,21 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     setSession(null);
 
     setLoading(false);
-  };
+  }, []);
 
-  const updateUserPrefs = async (prefs: UserPrefs) => {
+  const updateUserPrefs = useCallback(async (prefs: UserPrefs) => {
     try {
       const userUpdated = await account.updatePrefs(prefs);
       setUser(userUpdated);
     } catch (error) {
       console.log(error);
     }
-  };
+  }, []);
 
-  const contextData = { session, user, signin, signup, signout, updateUserPrefs };
+  const contextData = useMemo(
+    () => ({ session, user, signin, signup, signout, updateUserPrefs }),
+    [session, user, signin, signup, signout, updateUserPrefs]
+  );
 
   return (
     <AuthContext.Provider value={contextData}>

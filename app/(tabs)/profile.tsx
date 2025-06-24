@@ -1,5 +1,5 @@
-import { ChevronRight, LogOut, PenSquare } from 'lucide-react-native';
 import { router } from 'expo-router';
+import { ChevronRight, LogOut, PenSquare } from 'lucide-react-native';
 import React from 'react';
 import { Text, TouchableOpacity, View, Image } from 'react-native';
 
@@ -37,7 +37,7 @@ export default function Profile() {
     <Container page="profile">
       <View className="mb-6 items-center pt-8">
         <Image
-          source={{ uri: profileData.avatarUrl }}
+          source={require('~/assets/avatar.png')}
           className="mb-4 h-28 w-28 rounded-full border-2 border-gray-200"
           accessibilityLabel="Profile picture"
           onError={(e) => console.log('Error loading profile image:', e.nativeEvent.error)}
