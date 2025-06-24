@@ -1,7 +1,12 @@
 import * as SecureStore from 'expo-secure-store';
 import React, { useState, useEffect } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import Sahha, { SahhaEnvironment, SahhaSensor, SahhaSensorStatus } from 'sahha-react-native';
+import Sahha, {
+  SahhaEnvironment,
+  SahhaSensor,
+  SahhaSensorStatus,
+  SahhaScoreType,
+} from 'sahha-react-native';
 
 import CircularProgressBar from '~/components/CircularProgressBar';
 import { Container } from '~/components/Container';
@@ -9,6 +14,7 @@ import MetricCard from '~/components/cards/MetricCard';
 import HealthStatsCards from '~/components/sections/HealthStatsCards';
 import RingProgress from '~/components/ui/RingProgress';
 import { useAuth } from '~/context/AuthContext';
+import useSahhaStats from '~/hooks/useSahhaStats';
 
 const sahhaSettings = {
   environment: SahhaEnvironment.sandbox, // Required -  .sandbox for testing
@@ -42,6 +48,37 @@ const externalId = '7884a866-4ae1-4945-9fba-b2b8d2b7c5a9';
 export default function Home() {
   const { user } = useAuth();
 
+  const [activityScore, setActivityScore] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  const getStateColor = (state: string) => {
+    switch (state.toLowerCase()) {
+      case 'high':
+        return '#22C55E';
+      case 'medium':
+        return '#FFA500';
+      case 'minimal':
+        return '#EF4444';
+      default:
+        return '#808080';
+    }
+  };
+
+  const {
+    stats: stepStats,
+    loading: stepsLoading,
+    error: stepsError,
+  } = useSahhaStats(SahhaSensor.steps);
+
+  useEffect(() => {
+    if (stepStats) {
+      console.log('Step stats from hook:', stepStats);
+    }
+    if (stepsError) {
+      console.error('Error from useSahhaStats hook:', stepsError);
+    }
+  }, [stepStats, stepsError]);
+
   const [sahhaConfigured, setSahhaConfigured] = useState<boolean>(false);
   const [authentication, setAuthentication] = useState<{
     loading: boolean;
@@ -50,6 +87,41 @@ export default function Home() {
     loading: false,
     authenticated: false,
   });
+
+  useEffect(() => {
+    const fetchActivityScore = () => {
+      setLoading(true);
+
+      // We will use the getScores method which is better for this
+      const startDate = new Date('2025-06-23');
+      const endDate = new Date('2025-06-24');
+
+      Sahha.getScores(
+        [SahhaScoreType.activity],
+        startDate.getTime(),
+        endDate.getTime(),
+        (error: string, value: string) => {
+          setLoading(false);
+          if (error) {
+            console.error('Error fetching activity score:', error);
+          } else if (value) {
+            const scores = JSON.parse(value);
+            // We'll just grab the first score for now
+            if (scores && scores.length > 0) {
+              setActivityScore(scores[0]);
+            } else {
+              setActivityScore(null);
+            }
+          }
+        }
+      );
+    };
+
+    if (authentication.authenticated) {
+      fetchActivityScore();
+    }
+  }, [authentication.authenticated]);
+
   const [sensorStatus, setSensorStatus] = useState<{
     loading: boolean;
     status: SahhaSensorStatus;
@@ -57,10 +129,6 @@ export default function Home() {
     loading: true,
     status: SahhaSensorStatus.pending,
   });
-
-  const isDisabled =
-    sensorStatus.status === SahhaSensorStatus.unavailable ||
-    sensorStatus.status === SahhaSensorStatus.enabled;
 
   useEffect(() => {
     // Use custom values
@@ -81,6 +149,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    authenticateSahha();
     getSensorStatus();
   }, []);
 
@@ -121,13 +190,13 @@ export default function Home() {
   const getSensorStatus = () => {
     console.log('Sheck Sensor Status');
     Sahha.getSensorStatus(
-      [SahhaSensor.steps, SahhaSensor.sleep, SahhaSensor.device_lock],
+      [SahhaSensor.steps, SahhaSensor.sleep, SahhaSensor.heart_rate, SahhaSensor.device_lock],
       (error: string, value: SahhaSensorStatus) => {
         if (error) {
           console.error(`Error: ${error}`);
         } else if (value != null) {
           console.log(`Sensor Status: ` + SahhaSensorStatus[value]);
-          setSensorStatus(value);
+          setSensorStatus({ status: value, loading: false });
           if (value == SahhaSensorStatus.pending) {
             console.log('Pending');
             // Show your custom UI asking your user to setup Sleep in the Health App
@@ -158,7 +227,7 @@ export default function Home() {
           console.error(`Error: ${error}`);
         } else if (value != null) {
           console.log(`Sensor Status: ` + SahhaSensorStatus[value]);
-          setSensorStatus(value);
+          setSensorStatus({ status: value, loading: false });
           if (value == SahhaSensorStatus.pending) {
             console.log('pending');
             // Show your custom UI asking your user to setup Sleep in the Health App
@@ -171,22 +240,6 @@ export default function Home() {
   return (
     <Container page="home">
       <View className="my-4 gap-4">
-        <Text>
-          {authentication.loading
-            ? 'authenticating...'
-            : `authenticated: ${authentication.authenticated}`}
-        </Text>
-        <View className="my-12 gap-4">
-          <TouchableOpacity onPress={authenticateSahha}>
-            <Text>Authenticate</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={deauthenticate}>
-            <Text>Deauthenticate</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={enableSensors}>
-            <Text>Enable Sensors</Text>
-          </TouchableOpacity>
-        </View>
         <View>
           <Text className="font-geistMedium text-2xl text-gray-600">Hello,</Text>
           <Text className="font-geistSemiBold text-3xl">{user ? user.name : 'Friend'}</Text>

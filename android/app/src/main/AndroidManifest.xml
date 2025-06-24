@@ -4,76 +4,33 @@
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
   <uses-permission android:name="android.permission.VIBRATE"/>
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-  <!-- heart_rate -->
-    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
-
-    <!-- heart_rate_variability_rmssd -->
-    <uses-permission android:name="android.permission.health.READ_HEART_RATE_VARIABILITY" />
-
-     <!-- resting_heart_rate -->
-    <uses-permission android:name="android.permission.health.READ_RESTING_HEART_RATE" />
-
-    <!-- blood_glucose -->
-    <uses-permission android:name="android.permission.health.READ_BLOOD_GLUCOSE" />
-
-    <!-- blood_pressure_systolic -->
-    <!-- blood_pressure_diastolic -->
-    <uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE" />
-
-    <!-- sleep -->
-    <uses-permission android:name="android.permission.health.READ_SLEEP" />
-
-    <!-- steps -->
-    <uses-permission android:name="android.permission.health.READ_STEPS" />
-
-    <!-- floors_climbed -->
-    <uses-permission android:name="android.permission.health.READ_FLOORS_CLIMBED" />
-
-    <!-- vo2_max -->
-    <uses-permission android:name="android.permission.health.READ_VO2_MAX" />
-
-    <!-- oxygen_saturation -->
-    <uses-permission android:name="android.permission.health.READ_OXYGEN_SATURATION" />
-
-    <!-- respiratory_rate -->
-    <uses-permission android:name="android.permission.health.READ_RESPIRATORY_RATE" />
-
-    <!-- basal_metabolic_rate -->
-    <uses-permission android:name="android.permission.health.READ_BASAL_METABOLIC_RATE" />
-
-    <!-- active_energy_burned -->
-    <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED" />
-
-    <!-- total_energy_burned -->
-    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED" />
-
-    <!-- body_fat -->
-    <uses-permission android:name="android.permission.health.READ_BODY_FAT" />
-
-    <!-- body_water_mass -->
-    <uses-permission android:name="android.permission.health.READ_BODY_WATER_MASS" />
-
-    <!-- lean_body_mass -->
-    <uses-permission android:name="android.permission.health.READ_LEAN_BODY_MASS" />
-
-    <!-- bone_mass -->
-    <uses-permission android:name="android.permission.health.READ_BONE_MASS" />
-
-    <!-- height -->
-    <uses-permission android:name="android.permission.health.READ_HEIGHT" />
-
-    <!-- weight -->
-    <uses-permission android:name="android.permission.health.READ_WEIGHT" />
-
-    <!-- body_temperature -->
-    <uses-permission android:name="android.permission.health.READ_BODY_TEMPERATURE" />
-
-    <!-- basal_body_temperature -->
-    <uses-permission android:name="android.permission.health.READ_BASAL_BODY_TEMPERATURE" />
-
-    <!-- exercise -->
-    <uses-permission android:name="android.permission.health.READ_EXERCISE" />
-
+  <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED"/>
+  <uses-permission android:name="android.permission.health.READ_ACTIVE_ENERGY_BURNED"/>
+  <uses-permission android:name="android.permission.health.READ_BASAL_BODY_TEMPERATURE"/>
+  <uses-permission android:name="android.permission.health.READ_BASAL_METABOLIC_RATE"/>
+  <uses-permission android:name="android.permission.health.READ_BLOOD_GLUCOSE"/>
+  <uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE"/>
+  <uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE_SYSTOLIC"/>
+  <uses-permission android:name="android.permission.health.READ_BODY_FAT"/>
+  <uses-permission android:name="android.permission.health.READ_BODY_TEMPERATURE"/>
+  <uses-permission android:name="android.permission.health.READ_BODY_WATER_MASS"/>
+  <uses-permission android:name="android.permission.health.READ_BONE_MASS"/>
+  <uses-permission android:name="android.permission.health.READ_EXERCISE"/>
+  <uses-permission android:name="android.permission.health.READ_FLOORS_CLIMBED"/>
+  <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>
+  <uses-permission android:name="android.permission.health.READ_HEART_RATE_VARIABILITY"/>
+  <uses-permission android:name="android.permission.health.READ_HEART_RATE_VARIABILITY_SDNN"/>
+  <uses-permission android:name="android.permission.health.READ_HEIGHT"/>
+  <uses-permission android:name="android.permission.health.READ_LEAN_BODY_MASS"/>
+  <uses-permission android:name="android.permission.health.READ_OXYGEN_SATURATION"/>
+  <uses-permission android:name="android.permission.health.READ_RESPIRATORY_RATE"/>
+  <uses-permission android:name="android.permission.health.READ_RESTING_HEART_RATE"/>
+  <uses-permission android:name="android.permission.health.READ_SLEEP"/>
+  <uses-permission android:name="android.permission.health.READ_STEPS"/>
+  <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED"/>
+  <uses-permission android:name="android.permission.health.READ_TOTAL_ENERGY_BURNED"/>
+  <uses-permission android:name="android.permission.health.READ_VO2_MAX"/>
+  <uses-permission android:name="android.permission.health.READ_WEIGHT"/>
   <queries>
     <intent>
       <action android:name="android.intent.action.VIEW"/>
