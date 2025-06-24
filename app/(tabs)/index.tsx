@@ -1,12 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import React, { useState, useEffect } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import Sahha, {
-  SahhaEnvironment,
-  SahhaSensor,
-  SahhaSensorStatus,
-  SahhaScoreType,
-} from 'sahha-react-native';
+import { Text, View } from 'react-native';
+import Sahha, { SahhaEnvironment, SahhaSensor, SahhaSensorStatus } from 'sahha-react-native';
 
 import CircularProgressBar from '~/components/CircularProgressBar';
 import { Container } from '~/components/Container';
@@ -14,7 +9,9 @@ import MetricCard from '~/components/cards/MetricCard';
 import HealthStatsCards from '~/components/sections/HealthStatsCards';
 import RingProgress from '~/components/ui/RingProgress';
 import { useAuth } from '~/context/AuthContext';
-import useSahhaStats from '~/hooks/useSahhaStats';
+import useBiomarkers from '~/hooks/useBiomarkers';
+import useSahhaScore from '~/hooks/useSahhaScore';
+import { Activity } from '~/utils/api';
 
 const sahhaSettings = {
   environment: SahhaEnvironment.sandbox, // Required -  .sandbox for testing
@@ -47,8 +44,12 @@ const externalId = '7884a866-4ae1-4945-9fba-b2b8d2b7c5a9';
 
 export default function Home() {
   const { user } = useAuth();
+  const { data } = useBiomarkers();
+  const { data: scoreData } = useSahhaScore('2025-06-24');
+  console.log('scoreData', JSON.stringify(scoreData, null, 2));
 
-  const [activityScore, setActivityScore] = useState<any>(null);
+  const [stats, setStats] = useState<Activity[]>([]);
+  const [activityStats, setActivityStats] = useState<null>(null);
   const [loading, setLoading] = useState(false);
 
   const getStateColor = (state: string) => {
@@ -58,26 +59,11 @@ export default function Home() {
       case 'medium':
         return '#FFA500';
       case 'minimal':
-        return '#EF4444';
+        return '#FF4444';
       default:
         return '#808080';
     }
   };
-
-  const {
-    stats: stepStats,
-    loading: stepsLoading,
-    error: stepsError,
-  } = useSahhaStats(SahhaSensor.steps);
-
-  useEffect(() => {
-    if (stepStats) {
-      console.log('Step stats from hook:', stepStats);
-    }
-    if (stepsError) {
-      console.error('Error from useSahhaStats hook:', stepsError);
-    }
-  }, [stepStats, stepsError]);
 
   const [sahhaConfigured, setSahhaConfigured] = useState<boolean>(false);
   const [authentication, setAuthentication] = useState<{
@@ -89,36 +75,29 @@ export default function Home() {
   });
 
   useEffect(() => {
-    const fetchActivityScore = () => {
+    const fetchStats = () => {
       setLoading(true);
+      setStats([]);
 
-      // We will use the getScores method which is better for this
-      const startDate = new Date('2025-06-23');
-      const endDate = new Date('2025-06-24');
+      const token =
+        'profile eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwczovL2FwaS5zYWhoYS5haS9jbGFpbXMvcHJvZmlsZUlkIjoiMmRlM2VmMmItYjRhZi00YmJhLThjNjctZTA0ZTBmMzFiZmQzIiwiaHR0cHM6Ly9hcGkuc2FoaGEuYWkvY2xhaW1zL2V4dGVybmFsSWQiOiI3ODg0YTg2Ni00YWUxLTQ5NDUtOWZiYS1iMmI4ZDJiN2M1YTkiLCJodHRwczovL2FwaS5zYWhoYS5haS9jbGFpbXMvYWNjb3VudElkIjoiNDMxMTAxZjAtNzZkNC00MThmLWIzYTktNGMyOTlkZTAyODU1IiwiaHR0cHM6Ly9hcGkuc2FoaGEuYWkvY2xhaW1zL3NhaGhhQXBpU2NvcGUiOiJTYW5kYm94IiwiaHR0cHM6Ly9hcGkuc2FoaGEuYWkvY2xhaW1zL3JlZ2lvbiI6IlVTIiwiaHR0cHM6Ly9hcGkuc2FoaGEuYWkvY2xhaW1zL3JvbGUiOiJwcm9maWxlX293bmVyIiwiZXhwIjoxNzUwODA3NjYzLCJpc3MiOiJodHRwczovL3NhbmRib3gtYXBpLnNhaGhhLmFpIiwiYXVkIjoiaHR0cHM6Ly9zYW5kYm94LWFwaS5zYWhoYS5haSJ9.rVw7mDK2fICdmtjYeHKm5B4PELftPWFdkBt-0vc9T6E';
 
-      Sahha.getScores(
-        [SahhaScoreType.activity],
-        startDate.getTime(),
-        endDate.getTime(),
-        (error: string, value: string) => {
-          setLoading(false);
-          if (error) {
-            console.error('Error fetching activity score:', error);
-          } else if (value) {
-            const scores = JSON.parse(value);
-            // We'll just grab the first score for now
-            if (scores && scores.length > 0) {
-              setActivityScore(scores[0]);
-            } else {
-              setActivityScore(null);
-            }
-          }
+      fetch(
+        'https://sandbox-api.sahha.ai/api/v1/profile/score?endDateTime=2025-06-25&startDateTime=2025-06-25&types=activity',
+        {
+          method: 'GET',
+          headers: {
+            Authorization: token,
+          },
         }
-      );
+      )
+        .then((response) => response.json())
+        .then((data) => setStats(data))
+        .catch((error) => console.error('Error:', error));
     };
 
     if (authentication.authenticated) {
-      fetchActivityScore();
+      fetchStats();
     }
   }, [authentication.authenticated]);
 
@@ -245,18 +224,29 @@ export default function Home() {
           <Text className="font-geistSemiBold text-3xl">{user ? user.name : 'Friend'}</Text>
         </View>
         <View className="my-6 gap-4">
-          <RingProgress progress={0.7} radius={100} color="#10C875" />
+          <RingProgress
+            progress={Math.ceil(stats[0]?.factors[0]?.value / stats[0]?.factors[0]?.goal)}
+            radius={100}
+            color="#10C875"
+          />
           <Text className="text-center font-geistRegular text-lg ">
-            You've burned 1000 calories today
+            You've burned {stats[0]?.factors[2]?.value} calories today
           </Text>
         </View>
 
         {/* Health Stats Cards  */}
         <HealthStatsCards />
 
-        <MetricCard title="sleep" value={6.5} target={8} percentage={80} />
-        <MetricCard title="steps" value={5000} target={7500} percentage={50} />
-        <CircularProgressBar />
+        {stats[0]?.factors.map((factor) => (
+          <MetricCard
+            key={factor.id}
+            title={factor.name.split('_').join(' ')}
+            value={factor.value}
+            target={factor.goal}
+            unit={factor.unit}
+            color={getStateColor(factor.state)}
+          />
+        ))}
       </View>
     </Container>
   );
