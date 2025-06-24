@@ -46,6 +46,18 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "permissions": [
+        "android.permission.health.READ_STEPS",
+        "android.permission.health.READ_SLEEP",
+        "android.permission.health.READ_HEART_RATE",
+        "android.permission.health.READ_ACTIVE_ENERGY_BURNED",
+        "android.permission.health.READ_BLOOD_PRESSURE_SYSTOLIC",
+        "android.permission.health.READ_FLOORS_CLIMBED",
+        "android.permission.health.READ_HEART_RATE_VARIABILITY_SDNN",
+        "android.permission.health.READ_RESTING_HEART_RATE",
+        "android.permission.health.READ_TOTAL_ENERGY_BURNED",
+        "android.permission.health.READ_BODY_TEMPERATURE"
+      ],
       "package": "com.igiraneza_j.mynutriapp"
     },
     "extra": {

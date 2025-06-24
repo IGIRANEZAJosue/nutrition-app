@@ -1,0 +1,109 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+  <uses-permission android:name="android.permission.VIBRATE"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <!-- heart_rate -->
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
+
+    <!-- heart_rate_variability_rmssd -->
+    <uses-permission android:name="android.permission.health.READ_HEART_RATE_VARIABILITY" />
+
+     <!-- resting_heart_rate -->
+    <uses-permission android:name="android.permission.health.READ_RESTING_HEART_RATE" />
+
+    <!-- blood_glucose -->
+    <uses-permission android:name="android.permission.health.READ_BLOOD_GLUCOSE" />
+
+    <!-- blood_pressure_systolic -->
+    <!-- blood_pressure_diastolic -->
+    <uses-permission android:name="android.permission.health.READ_BLOOD_PRESSURE" />
+
+    <!-- sleep -->
+    <uses-permission android:name="android.permission.health.READ_SLEEP" />
+
+    <!-- steps -->
+    <uses-permission android:name="android.permission.health.READ_STEPS" />
+
+    <!-- floors_climbed -->
+    <uses-permission android:name="android.permission.health.READ_FLOORS_CLIMBED" />
+
+    <!-- vo2_max -->
+    <uses-permission android:name="android.permission.health.READ_VO2_MAX" />
+
+    <!-- oxygen_saturation -->
+    <uses-permission android:name="android.permission.health.READ_OXYGEN_SATURATION" />
+
+    <!-- respiratory_rate -->
+    <uses-permission android:name="android.permission.health.READ_RESPIRATORY_RATE" />
+
+    <!-- basal_metabolic_rate -->
+    <uses-permission android:name="android.permission.health.READ_BASAL_METABOLIC_RATE" />
+
+    <!-- active_energy_burned -->
+    <uses-permission android:name="android.permission.health.READ_ACTIVE_CALORIES_BURNED" />
+
+    <!-- total_energy_burned -->
+    <uses-permission android:name="android.permission.health.READ_TOTAL_CALORIES_BURNED" />
+
+    <!-- body_fat -->
+    <uses-permission android:name="android.permission.health.READ_BODY_FAT" />
+
+    <!-- body_water_mass -->
+    <uses-permission android:name="android.permission.health.READ_BODY_WATER_MASS" />
+
+    <!-- lean_body_mass -->
+    <uses-permission android:name="android.permission.health.READ_LEAN_BODY_MASS" />
+
+    <!-- bone_mass -->
+    <uses-permission android:name="android.permission.health.READ_BONE_MASS" />
+
+    <!-- height -->
+    <uses-permission android:name="android.permission.health.READ_HEIGHT" />
+
+    <!-- weight -->
+    <uses-permission android:name="android.permission.health.READ_WEIGHT" />
+
+    <!-- body_temperature -->
+    <uses-permission android:name="android.permission.health.READ_BODY_TEMPERATURE" />
+
+    <!-- basal_body_temperature -->
+    <uses-permission android:name="android.permission.health.READ_BASAL_BODY_TEMPERATURE" />
+
+    <!-- exercise -->
+    <uses-permission android:name="android.permission.health.READ_EXERCISE" />
+
+  <queries>
+    <intent>
+      <action android:name="android.intent.action.VIEW"/>
+      <category android:name="android.intent.category.BROWSABLE"/>
+      <data android:scheme="https"/>
+    </intent>
+  </queries>
+  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="true" android:theme="@style/AppTheme" android:supportsRtl="true" android:fullBackupContent="@xml/secure_store_backup_rules" android:dataExtractionRules="@xml/secure_store_data_extraction_rules">
+    <meta-data android:name="expo.modules.updates.ENABLED" android:value="false"/>
+    <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS"/>
+    <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0"/>
+    <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true" android:screenOrientation="portrait">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="my-nutri-app"/>
+        <data android:scheme="exp+my-nutri-app"/>
+      </intent-filter>
+      <activity android:name=".PermissionRationaleActivity" android:exported="true">
+        <intent-filter>
+          <action android:name="androidx.health.ACTION_SHOW_PERMISSION_RATIONALE"/>
+          <data android:scheme="my-nutri-app"/>
+          <data android:scheme="exp+my-nutri-app"/>
+        </intent-filter>
+      </activity>
+    </activity>
+  </application>
+</manifest>

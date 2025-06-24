@@ -1,6 +1,6 @@
-import SecureStore from 'expo-secure-store';
+import * as SecureStore from 'expo-secure-store';
 import React, { useState, useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import Sahha, { SahhaEnvironment, SahhaSensor, SahhaSensorStatus } from 'sahha-react-native';
 
 import CircularProgressBar from '~/components/CircularProgressBar';
@@ -19,7 +19,20 @@ const sahhaSettings = {
     shortDescription: 'Test description.',
   },
 
-  // sensors: [SahhaSensor.steps, SahhaSensor.sleep, SahhaSensor.device_lock], // defaults to all sensors
+  sensors: [
+    SahhaSensor.steps,
+    SahhaSensor.sleep,
+    SahhaSensor.device_lock,
+    SahhaSensor.heart_rate,
+    SahhaSensor.active_energy_burned,
+    SahhaSensor.blood_pressure_systolic,
+    SahhaSensor.floors_climbed,
+    SahhaSensor.heart_rate_variability_sdnn,
+    SahhaSensor.resting_heart_rate,
+    SahhaSensor.total_energy_burned,
+    SahhaSensor.body_temperature,
+    SahhaSensor.device_lock,
+  ], // defaults to all sensors
 };
 
 const appId = 'E1XDqfbpB7OZR421X3xmpNHqD51DtIJA';
@@ -37,26 +50,38 @@ export default function Home() {
     loading: false,
     authenticated: false,
   });
-  const [authStatus, setAuthStatus] = useState<boolean>(false);
-  const [sensorStatus, setSensorStatus] = useState<SahhaSensorStatus>(SahhaSensorStatus.pending);
+  const [sensorStatus, setSensorStatus] = useState<{
+    loading: boolean;
+    status: SahhaSensorStatus;
+  }>({
+    loading: true,
+    status: SahhaSensorStatus.pending,
+  });
 
   const isDisabled =
-    sensorStatus === SahhaSensorStatus.unavailable || sensorStatus === SahhaSensorStatus.enabled;
+    sensorStatus.status === SahhaSensorStatus.unavailable ||
+    sensorStatus.status === SahhaSensorStatus.enabled;
 
   useEffect(() => {
     // Use custom values
     if (Sahha) {
+      console.log('Sahha native module is available. Configuring...');
       Sahha.configure(sahhaSettings, (error: string, success: boolean) => {
         console.log(`Success: ${success}`);
         setSahhaConfigured(success);
+
         if (error) {
           console.error(`Error: ${error}`);
         }
       });
     } else {
-      console.error('Sahha native module is not available. Are you running in Expo Go?');
+      console.log('Sahha native module is not available. Are you running in Expo Go?');
       setSahhaConfigured(false);
     }
+  }, []);
+
+  useEffect(() => {
+    getSensorStatus();
   }, []);
 
   const saveData = async () => {
@@ -69,32 +94,99 @@ export default function Home() {
     }
   };
 
-  const authenticate = () => {
-    console.log('Authenticate');
+  const authenticateSahha = () => {
+    setAuthentication({ ...authentication, loading: true });
     saveData();
     Sahha.authenticate(appId, appSecret, externalId, (error: string, success: boolean) => {
+      console.log(`Sahha Authentication success: ${success}`);
+      setAuthentication({ authenticated: success, loading: false });
+
       if (error) {
         console.error(`Error: ${error}`);
-      } else if (success != null) {
-        console.log(`Auth Status: ` + success);
-        setAuthStatus(success);
       }
     });
   };
 
-  if (!sahhaConfigured) {
-    return (
-      <Container>
-        <View className="flex-1 items-center justify-center">
-          <Text>Sahha not configured. Check logs.</Text>
-        </View>
-      </Container>
+  const deauthenticate = () => {
+    setAuthentication({ ...authentication, loading: true });
+    console.log('Deauthenticate');
+    Sahha.deauthenticate((err, success) => {
+      console.log(`Deauthentication success: ${success}`);
+      setAuthentication({ authenticated: !success, loading: false });
+
+      if (err) console.log(`Sahha deauthentication error: ${err}`);
+    });
+  };
+
+  const getSensorStatus = () => {
+    console.log('Sheck Sensor Status');
+    Sahha.getSensorStatus(
+      [SahhaSensor.steps, SahhaSensor.sleep, SahhaSensor.device_lock],
+      (error: string, value: SahhaSensorStatus) => {
+        if (error) {
+          console.error(`Error: ${error}`);
+        } else if (value != null) {
+          console.log(`Sensor Status: ` + SahhaSensorStatus[value]);
+          setSensorStatus(value);
+          if (value == SahhaSensorStatus.pending) {
+            console.log('Pending');
+            // Show your custom UI asking your user to setup Sleep in the Health App
+          }
+        }
+      }
     );
-  }
+  };
+
+  const enableSensors = () => {
+    console.log('Enable Sensors');
+    Sahha.enableSensors(
+      [
+        SahhaSensor.steps,
+        SahhaSensor.sleep,
+        SahhaSensor.heart_rate,
+        SahhaSensor.active_energy_burned,
+        SahhaSensor.blood_pressure_systolic,
+        SahhaSensor.floors_climbed,
+        SahhaSensor.heart_rate_variability_sdnn,
+        SahhaSensor.resting_heart_rate,
+        SahhaSensor.total_energy_burned,
+        SahhaSensor.body_temperature,
+        SahhaSensor.device_lock,
+      ],
+      (error: string, value: SahhaSensorStatus) => {
+        if (error) {
+          console.error(`Error: ${error}`);
+        } else if (value != null) {
+          console.log(`Sensor Status: ` + SahhaSensorStatus[value]);
+          setSensorStatus(value);
+          if (value == SahhaSensorStatus.pending) {
+            console.log('pending');
+            // Show your custom UI asking your user to setup Sleep in the Health App
+          }
+        }
+      }
+    );
+  };
 
   return (
     <Container page="home">
       <View className="my-4 gap-4">
+        <Text>
+          {authentication.loading
+            ? 'authenticating...'
+            : `authenticated: ${authentication.authenticated}`}
+        </Text>
+        <View className="my-12 gap-4">
+          <TouchableOpacity onPress={authenticateSahha}>
+            <Text>Authenticate</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={deauthenticate}>
+            <Text>Deauthenticate</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={enableSensors}>
+            <Text>Enable Sensors</Text>
+          </TouchableOpacity>
+        </View>
         <View>
           <Text className="font-geistMedium text-2xl text-gray-600">Hello,</Text>
           <Text className="font-geistSemiBold text-3xl">{user ? user.name : 'Friend'}</Text>
