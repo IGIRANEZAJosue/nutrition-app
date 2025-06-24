@@ -1,16 +1,32 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from 'react';
 import { ActivityIndicator, SafeAreaView } from 'react-native';
 import { ID, Models } from 'react-native-appwrite';
 
 import { account } from '~/lib/appWriteConfig';
 import { loginUserDto, signupUserDto } from '~/utils/api';
 
+export interface UserPrefs {
+  height?: string;
+  weight?: string;
+  age?: string;
+  fitnessLevel?: string;
+}
+
 interface AuthContextType {
   session: Models.Session | null;
-  user: Models.User<object> | null;
+  user: Models.User<UserPrefs> | null;
   signin: (data: loginUserDto) => Promise<void>;
   signup: (data: signupUserDto) => Promise<void>;
   signout: () => Promise<void>;
+  updateUserPrefs: (prefs: UserPrefs) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -19,11 +35,12 @@ const AuthContext = createContext<AuthContextType>({
   signin: async (data: loginUserDto) => {},
   signup: async (data: signupUserDto) => {},
   signout: async () => {},
+  updateUserPrefs: async (prefs: UserPrefs) => {},
 });
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<Models.User<object> | null>(null);
+  const [user, setUser] = useState<Models.User<UserPrefs> | null>(null);
   const [session, setSession] = useState<Models.Session | null>(null);
 
   useEffect(() => {
@@ -46,7 +63,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const signin = async ({ email, password }: loginUserDto) => {
+  const signin = useCallback(async ({ email, password }: loginUserDto) => {
     setLoading(true);
 
     try {
@@ -60,9 +77,9 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     setLoading(false);
-  };
+  }, []);
 
-  const signup = async ({ email, password, name }: signupUserDto) => {
+  const signup = useCallback(async ({ email, password, name }: signupUserDto) => {
     setLoading(true);
     try {
       const newUser = await account.create(ID.unique(), email, password, name);
@@ -78,9 +95,9 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const signout = async () => {
+  const signout = useCallback(async () => {
     setLoading(true);
 
     await account.deleteSession('current');
@@ -88,9 +105,21 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     setSession(null);
 
     setLoading(false);
-  };
+  }, []);
 
-  const contextData = { session, user, signin, signup, signout };
+  const updateUserPrefs = useCallback(async (prefs: UserPrefs) => {
+    try {
+      const userUpdated = await account.updatePrefs(prefs);
+      setUser(userUpdated);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  const contextData = useMemo(
+    () => ({ session, user, signin, signup, signout, updateUserPrefs }),
+    [session, user, signin, signup, signout, updateUserPrefs]
+  );
 
   return (
     <AuthContext.Provider value={contextData}>
