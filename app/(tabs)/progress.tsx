@@ -1,12 +1,12 @@
 import { PersonStanding, Plus, Ruler } from 'lucide-react-native';
-import React from 'react';
-import { Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Text, View, ActivityIndicator } from 'react-native';
 import { SahhaSensor } from 'sahha-react-native';
 
 import { Container } from '~/components/Container';
 import GoalCard from '~/components/cards/GoalCard';
 import useSahhaStats from '~/hooks/useSahhaStats';
-// import MyWebComponent from '~/components/webview';
+import { getNutritionTrends } from '~/utils/api';
 
 const goalsData = [
   {
@@ -34,9 +34,27 @@ const goalsData = [
 ];
 
 const Progress = () => {
-  const { stats } = useSahhaStats(SahhaSensor.steps);
+  const { stats } = useSahhaStats();
+  const [trends, setTrends] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   console.log('stats', stats);
+
+  useEffect(() => {
+    const fetchTrends = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await getNutritionTrends(7);
+        setTrends(data);
+      } catch (err: any) {
+        setError(err.message || 'Failed to load nutrition trends');
+      }
+      setLoading(false);
+    };
+    fetchTrends();
+  }, []);
 
   return (
     <Container page="progress">
@@ -59,27 +77,31 @@ const Progress = () => {
         {/* Nutrition Stats */}
         <View className="mb-6 mt-4 rounded-xl border border-gray-200 bg-white p-4">
           <Text className="font-geistSemiBold text-lg">Nutrition</Text>
-          <View className="mt-4 flex-row justify-between">
-            <View>
-              <Text className="text-gray-600">Carbs</Text>
-              <Text className="font-geistSemiBold text-xl">180g</Text>
-              <Text className="text-sm text-gray-500">of 250g</Text>
+          {loading ? (
+            <ActivityIndicator />
+          ) : error ? (
+            <Text className="text-red-500">{error}</Text>
+          ) : trends ? (
+            <View className="mt-4 flex-row justify-between">
+              <View>
+                <Text className="text-gray-600">Carbs</Text>
+                <Text className="font-geistSemiBold text-xl">{trends.nutrient_averages?.carbs ? `${trends.nutrient_averages.carbs}g` : 'N/A'}</Text>
+                <Text className="text-sm text-gray-500">average</Text>
+              </View>
+              <View>
+                <Text className="text-gray-600">Protein</Text>
+                <Text className="font-geistSemiBold text-xl">{trends.nutrient_averages?.protein ? `${trends.nutrient_averages.protein}g` : 'N/A'}</Text>
+                <Text className="text-sm text-gray-500">average</Text>
+              </View>
+              <View>
+                <Text className="text-gray-600">Fat</Text>
+                <Text className="font-geistSemiBold text-xl">{trends.nutrient_averages?.fat ? `${trends.nutrient_averages.fat}g` : 'N/A'}</Text>
+                <Text className="text-sm text-gray-500">average</Text>
+              </View>
             </View>
-            <View>
-              <Text className="text-gray-600">Protein</Text>
-              <Text className="font-geistSemiBold text-xl">75g</Text>
-              <Text className="text-sm text-gray-500">of 90g</Text>
-            </View>
-            <View>
-              <Text className="text-gray-600">Fat</Text>
-              <Text className="font-geistSemiBold text-xl">45g</Text>
-              <Text className="text-sm text-gray-500">of 65g</Text>
-            </View>
-          </View>
+          ) : null}
         </View>
       </View>
-
-      {/* <MyWebComponent /> */}
     </Container>
   );
 };
