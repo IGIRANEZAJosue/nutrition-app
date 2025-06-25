@@ -1,4 +1,3 @@
-import { Picker } from '@react-native-picker/picker';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
@@ -64,14 +63,12 @@ export default function EditProfileModal() {
         <View className="mb-6">
           <Text className="mb-2 font-geistMedium text-base text-gray-600">Fitness Level</Text>
           <View className="rounded-xl border border-gray-300 bg-white">
-            <Picker
-              selectedValue={prefs.fitnessLevel}
-              onValueChange={(value) => setPrefs({ ...prefs, fitnessLevel: value })}
-              className="font-geistRegular text-base">
-              <Picker.Item label="Beginner" value="Beginner" />
-              <Picker.Item label="Intermediate" value="Intermediate" />
-              <Picker.Item label="Advanced" value="Advanced" />
-            </Picker>
+            <TextInput
+              className="rounded-xl border border-gray-300 bg-white p-4 font-geistRegular text-base"
+              placeholder="Beginner, Intermediate or Advanced"
+              value={prefs.fitnessLevel}
+              onChangeText={(text) => setPrefs({ ...prefs, fitnessLevel: text })}
+            />
           </View>
         </View>
 

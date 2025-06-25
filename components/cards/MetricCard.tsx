@@ -8,10 +8,12 @@ interface MetricCardProps {
   title: string;
   value: number;
   target: number;
-  percentage: number;
+  unit?: string;
+  percentage?: number;
+  color?: string;
 }
 
-const MetricCard = ({ title, value, target, percentage }: MetricCardProps) => {
+const MetricCard = ({ title, value, target, unit, percentage = 0, color }: MetricCardProps) => {
   return (
     <View className="w-full flex-row items-center justify-between rounded-2xl border border-gray-300 bg-white p-4">
       <View className="gap-4">
@@ -19,12 +21,14 @@ const MetricCard = ({ title, value, target, percentage }: MetricCardProps) => {
           <View className="size-12 items-center justify-center rounded-full bg-primaryLight">
             <Footprints size={20} color="black" />
           </View>
-          <Text className="font-geistMedium text-xl capitalize">{title}</Text>
+          <Text className="max-w-[90%] truncate font-geistMedium text-xl capitalize">{title}</Text>
         </View>
         <Text className="font-geistBold text-3xl">{value}</Text>
-        <Text className="font-geistRegular text-xl text-gray-400">/{target}</Text>
+        <Text className="font-geistRegular text-xl text-gray-400">
+          /{target} {title === 'steps' ? 'steps' : value > 1 && unit ? unit + 's' : unit}
+        </Text>
       </View>
-      <CircularProgressBar progress={percentage} />
+      <CircularProgressBar progress={Math.floor((value / target) * 100)} color={color} />
     </View>
   );
 };
