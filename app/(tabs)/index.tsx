@@ -34,7 +34,6 @@ const sahhaSettings = {
     SahhaSensor.resting_heart_rate,
     SahhaSensor.total_energy_burned,
     SahhaSensor.body_temperature,
-    SahhaSensor.device_lock,
   ], // defaults to all sensors
 };
 
@@ -142,9 +141,9 @@ export default function Home() {
     }
   };
 
-  const authenticateSahha = () => {
+  const authenticateSahha = async () => {
     setAuthentication({ ...authentication, loading: true });
-    saveData();
+    await saveData();
     Sahha.authenticate(appId, appSecret, externalId, (error: string, success: boolean) => {
       console.log(`Sahha Authentication success: ${success}`);
       setAuthentication({ authenticated: success, loading: false });
