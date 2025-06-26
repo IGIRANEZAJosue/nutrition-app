@@ -45,9 +45,7 @@ const Header = ({ goBack, page }: HeaderProps) => {
         <Text className="font-geistSemiBold text-2xl capitalize text-primaryDark">{page}</Text>
       )}
 
-      <Link href="/notifications" asChild>
-        <Pressable>{notifications.length > 0 ? <BellDot /> : <Bell />}</Pressable>
-      </Link>
+      <View className="size-6" />
     </View>
   );
 };

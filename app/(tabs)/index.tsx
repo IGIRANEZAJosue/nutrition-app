@@ -48,7 +48,7 @@ const sahhaSettings = {
 
 const appId = 'E1XDqfbpB7OZR421X3xmpNHqD51DtIJA';
 const appSecret = 'a4Pkh2IOFJkDOYc5QdaDaG6TGv1VdFhsIHtnFJwLIlRQrFT3CWX9lZEtg3gIDewl';
-const externalId = '7884a866-4ae1-4945-9fba-b2b8d2b7c5a9';
+const externalId = 'SampleProfile-622bd4c2-843e-4a1d-b75f-3dae46b6b4a0';
 
 // Meal type constants
 const MEAL_KEYS = ['breakfast', 'lunch', 'dinner', 'snack'];
@@ -105,7 +105,10 @@ export default function Home() {
 
   // Process biomarkers data for display
   const processBiomarkersData = () => {
+    console.log('Biomarkers data:', data); // Debug log to see actual data
+
     if (!data || !Array.isArray(data)) {
+      console.log('No biomarkers data available');
       return {
         steps: { current: 0, target: 7500 },
         sleep: { current: 0, target: 8 },
@@ -114,18 +117,18 @@ export default function Home() {
       };
     }
 
-    // Get today's data (most recent entries)
-    const today = new Date().toISOString().split('T')[0];
-    const todayData = data.filter(
-      (item) => item.startDateTime?.includes(today) || item.endDateTime?.includes(today)
-    );
+    // Get the most recent data (last few days to ensure we have data)
+    const recentData = data.slice(-20); // Get last 20 entries
+    console.log('Recent biomarkers data:', recentData);
 
-    // Extract relevant metrics
-    const steps = todayData.find((item) => item.type === 'steps')?.value || 0;
-    const sleepDuration = todayData.find((item) => item.type === 'sleep_duration')?.value || 0;
+    // Extract relevant metrics using the correct field names from Biomarker interface
+    const steps = recentData.find((item) => item.type === 'steps')?.value || 0;
+    const sleepDuration = recentData.find((item) => item.type === 'sleep_duration')?.value || 0;
     const activeCalories =
-      todayData.find((item) => item.type === 'active_energy_burned')?.value || 0;
-    const activeHours = todayData.find((item) => item.type === 'active_hours')?.value || 0;
+      recentData.find((item) => item.type === 'active_energy_burned')?.value || 0;
+    const activeHours = recentData.find((item) => item.type === 'active_hours')?.value || 0;
+
+    console.log('Processed metrics:', { steps, sleepDuration, activeCalories, activeHours });
 
     return {
       steps: {
@@ -469,7 +472,6 @@ export default function Home() {
             (healthMetrics.activeHours.current / healthMetrics.activeHours.target) * 100
           )}
         />
-        <CircularProgressBar />
       </View>
 
       {/* Meal Plan Modal */}
