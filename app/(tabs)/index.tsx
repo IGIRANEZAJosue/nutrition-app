@@ -96,7 +96,6 @@ const MealCard = ({ meal, mealType }: { meal: any; mealType: string }) => {
 export default function Home() {
   const { user } = useAuth();
   const { data } = useBiomarkers();
-  console.log(JSON.stringify(data, null, 2));
 
   const [stats, setStats] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(false);

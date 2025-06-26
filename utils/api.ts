@@ -154,6 +154,25 @@ export async function generateWearableEnhancedMealPlan(profile: {
   });
 }
 
+export async function generateActivityBasedMealPlan(profile: {
+  weight_kg: number;
+  height_cm: number;
+  age: number;
+  gender: string;
+  activity_level: string;
+  goal: string;
+  diseases?: string[];
+  allergies?: string[];
+  intolerances?: string[];
+  dietary_restrictions?: string[];
+  variety_level?: string;
+}) {
+  return apiRequestWithRefresh<any>('/meal-plan/activity', {
+    method: 'POST',
+    body: JSON.stringify(profile),
+  });
+}
+
 export async function addNutritionHistory(mealData: {
   timestamp: string;
   meal_type: string;

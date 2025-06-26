@@ -1,17 +1,22 @@
 import { Bed, Brain, Footprints, Heart } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 
 import { Container } from '~/components/Container';
 import AnalysisCard from '~/components/cards/AnalysisCard';
+import MealPlanModal from '~/components/MealPlanModal';
+import { useAuth } from '~/context/AuthContext';
 import useBiomarkers from '~/hooks/useBiomarkers';
-import { getNutritionInsights } from '~/utils/api';
+import { getNutritionInsights, generateActivityBasedMealPlan } from '~/utils/api';
 
 const Insights = () => {
   const { data: biomarkersData } = useBiomarkers();
   const [insights, setInsights] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [mealPlanData, setMealPlanData] = useState<any>(null);
+  const [showMealModal, setShowMealModal] = useState(false);
+  const { user } = useAuth();
 
   // Process biomarkers data for insights
   const processBiomarkersInsights = () => {
@@ -113,6 +118,57 @@ const Insights = () => {
 
   const biomarkersInsights = processBiomarkersInsights();
 
+  const getRecommendedRecipe = async () => {
+    setLoading(true);
+    try {
+      // Determine activity level based on biomarkers data
+      const activeCalories = biomarkersInsights.metrics?.activeCalories || 0;
+      const todaySteps = biomarkersInsights.metrics?.todaySteps || 0;
+
+      let activityLevel = 'sedentary';
+      if (activeCalories > 200 || todaySteps > 8000) {
+        activityLevel = 'very_active';
+      } else if (activeCalories > 100 || todaySteps > 5000) {
+        activityLevel = 'moderately_active';
+      } else if (activeCalories > 50 || todaySteps > 2000) {
+        activityLevel = 'lightly_active';
+      }
+
+      const profile = {
+        weight_kg: user?.profile?.weight_kg || 70,
+        height_cm: user?.profile?.height_cm || 175,
+        age: user?.profile?.age || 30,
+        gender: user?.profile?.gender || 'male',
+        activity_level: activityLevel,
+        goal: 'maintain',
+        diseases: [],
+        allergies: user?.preferences?.allergies || [],
+        intolerances: user?.preferences?.intolerances || [],
+        dietary_restrictions: user?.preferences?.dietary_restrictions || [],
+        variety_level: 'maximum',
+      };
+      const result = await generateActivityBasedMealPlan(profile);
+      setMealPlanData(result);
+      setShowMealModal(true);
+    } catch (err: any) {
+      Alert.alert('Error', err.message || 'Failed to generate recommendations.');
+    }
+    setLoading(false);
+  };
+
+  const handleSelectMeal = async (meal: any) => {
+    Alert.alert('Meal Selected', `You selected: ${meal.Name}`, [{ text: 'OK' }]);
+  };
+
+  const handleCloseMealModal = () => {
+    setShowMealModal(false);
+    setMealPlanData(null);
+  };
+
+  const handleGenerateNew = async () => {
+    await getRecommendedRecipe();
+  };
+
   useEffect(() => {
     const fetchInsights = async () => {
       setLoading(true);
@@ -140,11 +196,18 @@ const Insights = () => {
             <Text className="font-geistSemiBold text-lg">AI tip</Text>
             <Text className="font-geistRegular text-sm text-gray-700">
               {biomarkersInsights.workoutRecommendation} To optimize recovery and replenish energy
-              stores, consider these carb-rich foods:
+              stores, consider these foods:
             </Text>
           </View>
         </View>
       </View>
+
+      <TouchableOpacity
+        onPress={getRecommendedRecipe}
+        className="mt-4 rounded-xl bg-primary p-4 text-center"
+        disabled={loading}>
+        <Text className="font-geistSemiBold text-lg text-white">Get AI recipe</Text>
+      </TouchableOpacity>
 
       <View>
         <Text className="mt-4 font-geistSemiBold text-xl">Today's Analysis</Text>
@@ -200,6 +263,16 @@ const Insights = () => {
           </View>
         </View>
       </View>
+
+      {/* Meal Plan Modal */}
+      <MealPlanModal
+        visible={showMealModal}
+        onClose={handleCloseMealModal}
+        mealPlanData={mealPlanData}
+        onSelectMeal={handleSelectMeal}
+        onGenerateNew={handleGenerateNew}
+        loading={loading}
+      />
     </Container>
   );
 };
