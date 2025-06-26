@@ -7,118 +7,160 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { ActivityIndicator, SafeAreaView } from 'react-native';
-import { ID, Models } from 'react-native-appwrite';
-
-import { account } from '~/lib/appWriteConfig';
-import { loginUserDto, signupUserDto } from '~/utils/api';
+import { ActivityIndicator, SafeAreaView, Alert } from 'react-native';
+import {
+  loginUserDto,
+  signupUserDto,
+  loginUser,
+  signupUser,
+  getCurrentUser,
+  refreshAccessToken,
+  setTokens,
+  clearTokens,
+  updateProfile,
+  loadTokens,
+} from '~/utils/api';
 
 export interface UserPrefs {
   height?: string;
   weight?: string;
   age?: string;
   fitnessLevel?: string;
+  gender?: string;
+  activity_level?: string;
 }
 
 interface AuthContextType {
-  session: Models.Session | null;
-  user: Models.User<UserPrefs> | null;
+  session: boolean; // true if logged in
+  user: any | null;
   signin: (data: loginUserDto) => Promise<void>;
   signup: (data: signupUserDto) => Promise<void>;
   signout: () => Promise<void>;
   updateUserPrefs: (prefs: UserPrefs) => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
-  session: null,
+  session: false,
   user: null,
   signin: async (data: loginUserDto) => {},
   signup: async (data: signupUserDto) => {},
   signout: async () => {},
   updateUserPrefs: async (prefs: UserPrefs) => {},
+  refreshUser: async () => {},
 });
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<Models.User<UserPrefs> | null>(null);
-  const [session, setSession] = useState<Models.Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any | null>(null);
+  const [session, setSession] = useState<boolean>(false);
 
   useEffect(() => {
-    init();
+    checkAuth();
   }, []);
 
-  const init = () => {
-    checkAuth();
-  };
-
   const checkAuth = async () => {
+    setLoading(true);
     try {
-      const session = await account.getSession('current');
-      setSession(session);
-
-      const user = await account.get();
+      await loadTokens();
+      const user = await getCurrentUser();
       setUser(user);
+      setSession(true);
     } catch (error) {
-      console.log(error);
+      console.error('Auth check failed:', error);
+      setUser(null);
+      setSession(false);
     }
+    setLoading(false);
   };
 
-  const signin = useCallback(async ({ email, password }: loginUserDto) => {
+  const signin = useCallback(async (data: loginUserDto) => {
     setLoading(true);
-
     try {
-      const responseSession = await account.createEmailPasswordSession(email, password);
-      setSession(responseSession);
-
-      const responseUser = await account.get();
-      setUser(responseUser);
+      const user = await loginUser(data);
+      // After login, fetch fresh user data from /auth/me
+      const freshUser = await getCurrentUser();
+      setUser(freshUser);
+      setSession(true);
     } catch (error) {
-      console.log(error);
+      setUser(null);
+      setSession(false);
+      throw error;
     }
-
     setLoading(false);
   }, []);
 
-  const signup = useCallback(async ({ email, password, name }: signupUserDto) => {
+  const signup = useCallback(
+    async (data: signupUserDto) => {
+      setLoading(true);
+      try {
+        await signupUser(data);
+        // After signup, immediately login and fetch fresh user data
+        await signin({ email: data.email, password: data.password });
+      } catch (error) {
+        setUser(null);
+        setSession(false);
+        throw error;
+      }
+      setLoading(false);
+    },
+    [signin]
+  );
+
+  const signout = useCallback(async () => {
+    setLoading(true);
+    await clearTokens();
+    setUser(null);
+    setSession(false);
+    setLoading(false);
+  }, []);
+
+  const updateUserPrefs = useCallback(async (prefs: UserPrefs) => {
     setLoading(true);
     try {
-      const newUser = await account.create(ID.unique(), email, password, name);
+      // Convert string values to numbers where appropriate
+      const profileData = {
+        profile: {
+          weight_kg: prefs.weight ? parseFloat(prefs.weight) : undefined,
+          height_cm: prefs.height ? parseFloat(prefs.height) : undefined,
+          age: prefs.age ? parseInt(prefs.age) : undefined,
+          gender: prefs.gender,
+          fitness_level: prefs.fitnessLevel,
+          activity_level: prefs.activity_level,
+        },
+      };
 
-      if (!newUser) throw new Error('User creation failed');
-
-      // Automatically sign in the user after successful signup
-      const session = await account.createEmailPasswordSession(email, password);
-      setSession(session);
-      setUser(newUser);
-    } catch (error) {
-      console.error('Signup error:', error);
+      const updatedUser = await updateProfile(profileData);
+      setUser(updatedUser);
+    } catch (error: any) {
+      console.error('Profile update failed:', error);
+      Alert.alert('Error', error.message || 'Failed to update profile');
+      throw error;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const signout = useCallback(async () => {
-    setLoading(true);
-
-    await account.deleteSession('current');
-    setUser(null);
-    setSession(null);
-
-    setLoading(false);
-  }, []);
-
-  const updateUserPrefs = useCallback(async (prefs: UserPrefs) => {
+  const refreshUser = useCallback(async () => {
     try {
-      const userUpdated = await account.updatePrefs(prefs);
-      setUser(userUpdated);
-    } catch (error) {
-      console.log(error);
+      const user = await getCurrentUser();
+      setUser(user);
+      setSession(true);
+      return user;
+    } catch (error: any) {
+      console.error('Failed to refresh user data:', error);
+      // If refresh fails and we have no user, clear session
+      if (!user) {
+        setSession(false);
+        await clearTokens();
+      }
+      throw error;
     }
-  }, []);
+  }, [user]);
 
   const contextData = useMemo(
-    () => ({ session, user, signin, signup, signout, updateUserPrefs }),
-    [session, user, signin, signup, signout, updateUserPrefs]
+    () => ({ session, user, signin, signup, signout, updateUserPrefs, refreshUser }),
+    [session, user, signin, signup, signout, updateUserPrefs, refreshUser]
   );
 
   return (

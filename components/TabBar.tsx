@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 const TabBar = () => {
-  return <View>Hello</View>;
+  return <View />;
 };
 
 export default TabBar;

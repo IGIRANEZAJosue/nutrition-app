@@ -7,19 +7,27 @@ import { useAuth } from '~/context/AuthContext';
 
 const Signup = () => {
   const { signup } = useAuth();
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSignup = async () => {
-    if (!name || !email || !password) {
+    if (!username || !firstName || !lastName || !email || !password) {
       console.log('Please fill in all fields.');
       return;
     }
     setIsLoading(true);
     try {
-      await signup({ email, password, name });
+      await signup({ 
+        username, 
+        email, 
+        password, 
+        first_name: firstName, 
+        last_name: lastName 
+      });
       router.replace('/(tabs)');
     } catch (error: any) {
       console.error('Signup failed:', error);
@@ -42,11 +50,29 @@ const Signup = () => {
         </Text>
 
         <View className="my-4">
-          <Text className="my-2 font-geistRegular font-semibold">Name</Text>
+          <Text className="my-2 font-geistRegular font-semibold">Username</Text>
           <TextInput
-            onChangeText={setName}
-            value={name}
+            onChangeText={setUsername}
+            value={username}
             placeholder="Your unique username"
+            className="w-full rounded-lg border border-gray-200 p-4"
+          />
+        </View>
+        <View className="my-4">
+          <Text className="my-2 font-geistRegular font-semibold">First Name</Text>
+          <TextInput
+            onChangeText={setFirstName}
+            value={firstName}
+            placeholder="John"
+            className="w-full rounded-lg border border-gray-200 p-4"
+          />
+        </View>
+        <View className="my-4">
+          <Text className="my-2 font-geistRegular font-semibold">Last Name</Text>
+          <TextInput
+            onChangeText={setLastName}
+            value={lastName}
+            placeholder="Doe"
             className="w-full rounded-lg border border-gray-200 p-4"
           />
         </View>

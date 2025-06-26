@@ -1,12 +1,253 @@
 import { Bed, Brain, Footprints, Heart } from 'lucide-react-native';
-import React from 'react';
-import { Image, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 
 import { Container } from '~/components/Container';
 import AnalysisCard from '~/components/cards/AnalysisCard';
-import RecommendedRecipes from '~/components/sections/RecommendedRecipes';
+import MealPlanModal from '~/components/MealPlanModal';
+import { useAuth } from '~/context/AuthContext';
+import useBiomarkers from '~/hooks/useBiomarkers';
+import { getNutritionInsights, generateActivityBasedMealPlan } from '~/utils/api';
 
 const Insights = () => {
+  const {
+    data: biomarkersData,
+    loading: biomarkersLoading,
+    error: biomarkersError,
+  } = useBiomarkers();
+  const [insights, setInsights] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [mealPlanData, setMealPlanData] = useState<any>(null);
+  const [showMealModal, setShowMealModal] = useState(false);
+  const { user } = useAuth();
+
+  // Process biomarkers data for insights
+  const processBiomarkersInsights = () => {
+    console.log('Processing biomarkers data:', biomarkersData);
+    console.log('Biomarkers loading:', biomarkersLoading);
+    console.log('Biomarkers error:', biomarkersError);
+
+    if (biomarkersLoading) {
+      return {
+        sleepQuality: 'Loading data...',
+        stepsTrend: 'Loading data...',
+        activityLevel: 'Loading data...',
+        workoutRecommendation: 'Loading recommendations...',
+      };
+    }
+
+    if (biomarkersError) {
+      return {
+        sleepQuality: `Error: ${biomarkersError}`,
+        stepsTrend: `Error: ${biomarkersError}`,
+        activityLevel: `Error: ${biomarkersError}`,
+        workoutRecommendation: 'Unable to load recommendations due to data error',
+      };
+    }
+
+    if (!biomarkersData || !Array.isArray(biomarkersData) || biomarkersData.length === 0) {
+      return {
+        sleepQuality: 'No biomarker data available',
+        stepsTrend: 'No step data available',
+        activityLevel: 'No activity data available',
+        workoutRecommendation: 'General post-workout nutrition recommended',
+      };
+    }
+
+    // Get today's and yesterday's data for comparison
+    const today = new Date().toISOString().split('T')[0];
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    console.log('Looking for data on:', today, 'and', yesterday);
+    console.log(
+      'Available biomarkers data:',
+      biomarkersData.map((item) => ({
+        type: item.type,
+        value: item.value,
+        startDateTime: item.startDateTime,
+        endDateTime: item.endDateTime,
+      }))
+    );
+
+    const todayData = biomarkersData.filter((item) => {
+      const itemDate = item.startDateTime?.split('T')[0] || item.endDateTime?.split('T')[0];
+      return itemDate === today;
+    });
+    const yesterdayData = biomarkersData.filter((item) => {
+      const itemDate = item.startDateTime?.split('T')[0] || item.endDateTime?.split('T')[0];
+      return itemDate === yesterday;
+    });
+
+    console.log('Today data found:', todayData.length, 'items');
+    console.log('Yesterday data found:', yesterdayData.length, 'items');
+
+    // Extract key metrics - if today's data is not available, use most recent data
+    const getLatestMetric = (type: string) => {
+      // Try today first
+      let metric = todayData.find((item) => item.type === type);
+      if (!metric) {
+        // Try yesterday
+        metric = yesterdayData.find((item) => item.type === type);
+      }
+      if (!metric) {
+        // Try any recent data from the last 7 days
+        const recentData = biomarkersData
+          .filter((item) => item.type === type)
+          .sort(
+            (a, b) =>
+              new Date(b.endDateTime || b.startDateTime).getTime() -
+              new Date(a.endDateTime || a.startDateTime).getTime()
+          );
+        metric = recentData[0];
+      }
+      return metric;
+    };
+
+    const todaySteps = parseInt(getLatestMetric('steps')?.value || '0');
+    const yesterdaySteps = parseInt(
+      yesterdayData.find((item) => item.type === 'steps')?.value || '0'
+    );
+    const sleepDuration = parseInt(getLatestMetric('sleep_duration')?.value || '0');
+    const activeCalories = parseInt(getLatestMetric('active_energy_burned')?.value || '0');
+    const activeHours = parseInt(getLatestMetric('active_hours')?.value || '0');
+    const sedentaryTime = parseInt(getLatestMetric('activity_sedentary_duration')?.value || '0');
+
+    console.log('Extracted metrics:', {
+      todaySteps,
+      yesterdaySteps,
+      sleepDuration,
+      activeCalories,
+      activeHours,
+      sedentaryTime,
+    });
+
+    // Generate insights
+    const sleepHours = sleepDuration / 60;
+    let sleepQuality = '';
+    if (sleepHours >= 7.5) {
+      sleepQuality = 'Excellent - Well rested for optimal metabolism';
+    } else if (sleepHours >= 6.5) {
+      sleepQuality = 'Good - Consider earlier bedtime for better recovery';
+    } else if (sleepHours >= 5) {
+      sleepQuality = 'Poor - Lack of sleep affects appetite hormones';
+    } else {
+      sleepQuality = 'Critical - Sleep deprivation impacts weight management';
+    }
+
+    // Steps trend analysis
+    let stepsTrend = '';
+    if (todaySteps > yesterdaySteps) {
+      stepsTrend = `Great progress! ${todaySteps.toLocaleString()} steps (+${(todaySteps - yesterdaySteps).toLocaleString()})`;
+    } else if (todaySteps < yesterdaySteps) {
+      stepsTrend = `${todaySteps.toLocaleString()} steps (${(todaySteps - yesterdaySteps).toLocaleString()} from yesterday)`;
+    } else {
+      stepsTrend = `${todaySteps.toLocaleString()} steps - Consistent with yesterday`;
+    }
+
+    // Activity level assessment
+    let activityLevel = '';
+    if (activeCalories > 200) {
+      activityLevel = 'High activity - Perfect for muscle recovery nutrition';
+    } else if (activeCalories > 100) {
+      activityLevel = 'Moderate activity - Balanced nutrition recommended';
+    } else {
+      activityLevel = 'Light activity - Focus on nutrient-dense foods';
+    }
+
+    // Workout-based recommendation
+    let workoutRecommendation = '';
+    if (activeCalories > 150) {
+      workoutRecommendation = 'You had a solid workout session today!';
+    } else if (activeCalories > 75) {
+      workoutRecommendation = 'You had moderate activity today.';
+    } else {
+      workoutRecommendation = 'Light activity day.';
+    }
+
+    return {
+      sleepQuality,
+      stepsTrend,
+      activityLevel,
+      workoutRecommendation,
+      metrics: {
+        sleepHours: sleepHours.toFixed(1),
+        todaySteps,
+        activeCalories,
+        activeHours,
+        sedentaryHours: (sedentaryTime / 60).toFixed(1),
+      },
+    };
+  };
+
+  const biomarkersInsights = processBiomarkersInsights();
+
+  const getRecommendedRecipe = async () => {
+    setLoading(true);
+    try {
+      // Determine activity level based on biomarkers data
+      const activeCalories = biomarkersInsights.metrics?.activeCalories || 0;
+      const todaySteps = biomarkersInsights.metrics?.todaySteps || 0;
+
+      let activityLevel = 'sedentary';
+      if (activeCalories > 200 || todaySteps > 8000) {
+        activityLevel = 'very_active';
+      } else if (activeCalories > 100 || todaySteps > 5000) {
+        activityLevel = 'moderately_active';
+      } else if (activeCalories > 50 || todaySteps > 2000) {
+        activityLevel = 'lightly_active';
+      }
+
+      const profile = {
+        weight_kg: user?.profile?.weight_kg || 70,
+        height_cm: user?.profile?.height_cm || 175,
+        age: user?.profile?.age || 30,
+        gender: user?.profile?.gender || 'male',
+        activity_level: activityLevel,
+        goal: 'maintain',
+        diseases: [],
+        allergies: user?.preferences?.allergies || [],
+        intolerances: user?.preferences?.intolerances || [],
+        dietary_restrictions: user?.preferences?.dietary_restrictions || [],
+        variety_level: 'maximum',
+      };
+      const result = await generateActivityBasedMealPlan(profile);
+      setMealPlanData(result);
+      setShowMealModal(true);
+    } catch (err: any) {
+      Alert.alert('Error', err.message || 'Failed to generate recommendations.');
+    }
+    setLoading(false);
+  };
+
+  const handleSelectMeal = async (meal: any) => {
+    Alert.alert('Meal Selected', `You selected: ${meal.Name}`, [{ text: 'OK' }]);
+  };
+
+  const handleCloseMealModal = () => {
+    setShowMealModal(false);
+    setMealPlanData(null);
+  };
+
+  const handleGenerateNew = async () => {
+    await getRecommendedRecipe();
+  };
+
+  useEffect(() => {
+    const fetchInsights = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await getNutritionInsights(30);
+        setInsights(data);
+      } catch (err: any) {
+        setError(err.message || 'Failed to load insights');
+      }
+      setLoading(false);
+    };
+    fetchInsights();
+  }, []);
+
   return (
     <Container page="insights">
       <View className="my-5 gap-4 rounded-xl bg-[#EFF6FF] p-4">
@@ -16,31 +257,21 @@ const Insights = () => {
             <Brain size={20} color="white" />
           </View>
           <View className="flex-1 gap-2">
-            <Text className="font-geistSemiBold text-lg">Post-Workout Nutrition Tip</Text>
+            <Text className="font-geistSemiBold text-lg">AI tip</Text>
             <Text className="font-geistRegular text-sm text-gray-700">
-              You just completed a 45-min workout. To replenish glycogen stores, consider these
-              carb-rich foods:
+              {biomarkersInsights.workoutRecommendation} To optimize recovery and replenish energy
+              stores, consider these foods:
             </Text>
-
-            <View className="mt-4 flex-row gap-2">
-              <Image
-                source={require('../../assets/banana-image.png')}
-                style={{ width: 72, height: 72, borderRadius: 8 }}
-              />
-              <Image
-                source={require('../../assets/oats-image.png')}
-                style={{ width: 72, height: 72, borderRadius: 8 }}
-              />
-              <Image
-                source={require('../../assets/dough-image.png')}
-                style={{ width: 72, height: 72, borderRadius: 8 }}
-              />
-            </View>
           </View>
         </View>
       </View>
 
-      <RecommendedRecipes />
+      <TouchableOpacity
+        onPress={getRecommendedRecipe}
+        className="mt-4 rounded-xl bg-primary p-4 text-center"
+        disabled={loading}>
+        <Text className="font-geistSemiBold text-lg text-white">Get AI recipe</Text>
+      </TouchableOpacity>
 
       <View>
         <Text className="mt-4 font-geistSemiBold text-xl">Today's Analysis</Text>
@@ -49,22 +280,63 @@ const Insights = () => {
             icon={<Bed size={20} color="white" accessibilityLabel="Sleep icon" />}
             bgColor="bg-[#6366F1]"
             title="Sleep Quality"
-            description="Your sleep was 23 minutes better than average"
+            description={biomarkersInsights.sleepQuality}
           />
           <AnalysisCard
             icon={<Footprints size={20} color="white" accessibilityLabel="Step count icon" />}
             bgColor="bg-blue-500"
             title="Step Count Trend"
-            description="You're walking 15% more than last week"
+            description={biomarkersInsights.stepsTrend}
           />
           <AnalysisCard
-            icon={<Heart size={20} color="white" accessibilityLabel="Heart rate icon" />}
+            icon={<Heart size={20} color="white" accessibilityLabel="Activity level icon" />}
             bgColor="bg-[#EC4899]"
-            title="Heart Rate Variability"
-            description="Your stress levels are lower than usual"
+            title="Activity Level"
+            description={biomarkersInsights.activityLevel}
           />
         </View>
+
+        {/* Additional Real-time Metrics */}
+        <View className="mt-6">
+          <Text className="mb-3 font-geistSemiBold text-lg">Health Metrics Summary</Text>
+          <View className="gap-3 rounded-xl bg-gray-50 p-4">
+            <View className="flex-row justify-between">
+              <Text className="font-geistMedium text-gray-700">Sleep Duration</Text>
+              <Text className="font-geistSemiBold">
+                {biomarkersInsights.metrics?.sleepHours || '0'} hours
+              </Text>
+            </View>
+            <View className="flex-row justify-between">
+              <Text className="font-geistMedium text-gray-700">Active Calories</Text>
+              <Text className="font-geistSemiBold">
+                {biomarkersInsights.metrics?.activeCalories || 0} kcal
+              </Text>
+            </View>
+            <View className="flex-row justify-between">
+              <Text className="font-geistMedium text-gray-700">Active Hours</Text>
+              <Text className="font-geistSemiBold">
+                {biomarkersInsights.metrics?.activeHours || 0} hours
+              </Text>
+            </View>
+            <View className="flex-row justify-between">
+              <Text className="font-geistMedium text-gray-700">Sedentary Time</Text>
+              <Text className="font-geistSemiBold">
+                {biomarkersInsights.metrics?.sedentaryHours || '0'} hours
+              </Text>
+            </View>
+          </View>
+        </View>
       </View>
+
+      {/* Meal Plan Modal */}
+      <MealPlanModal
+        visible={showMealModal}
+        onClose={handleCloseMealModal}
+        mealPlanData={mealPlanData}
+        onSelectMeal={handleSelectMeal}
+        onGenerateNew={handleGenerateNew}
+        loading={loading}
+      />
     </Container>
   );
 };

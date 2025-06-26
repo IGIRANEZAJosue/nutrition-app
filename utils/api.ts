@@ -1,12 +1,242 @@
+import * as SecureStore from 'expo-secure-store';
+
+const BASE_URL = 'https://nutrionhd-recommendation-modal.onrender.com';
+
+let accessToken: string | null = null;
+let refreshToken: string | null = null;
+
+const ACCESS_TOKEN_KEY = 'accessToken';
+const REFRESH_TOKEN_KEY = 'refreshToken';
+
 export interface loginUserDto {
   email: string;
   password: string;
 }
 
 export interface signupUserDto {
+  username: string;
   email: string;
   password: string;
   name: string;
+  first_name?: string;
+  last_name?: string;
+  profile?: any;
+  preferences?: any;
+}
+
+export async function loadTokens() {
+  try {
+    accessToken = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
+    refreshToken = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
+    return { accessToken, refreshToken };
+  } catch (error) {
+    console.error('Failed to load tokens from secure store', error);
+    return { accessToken: null, refreshToken: null };
+  }
+}
+
+export async function apiRequest<T>(
+  endpoint: string,
+  options: RequestInit = {},
+  requireAuth: boolean = true
+): Promise<T> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  // Merge headers properly
+  if (options.headers) {
+    Object.assign(headers, options.headers);
+  }
+
+  if (requireAuth && accessToken) {
+    headers['Authorization'] = `Bearer ${accessToken}`;
+  }
+
+  const res = await fetch(`${BASE_URL}${endpoint}`, {
+    ...options,
+    headers,
+  });
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({}));
+    throw new Error(error.error || res.statusText);
+  }
+  return res.json();
+}
+
+export async function loginUser(data: loginUserDto) {
+  const res = await apiRequest<{ access_token: string; refresh_token: string; user: any }>(
+    '/auth/login',
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+    },
+    false
+  );
+  setTokens({ access: res.access_token, refresh: res.refresh_token });
+  return res.user;
+}
+
+export async function signupUser(data: signupUserDto) {
+  const res = await apiRequest<{ user: any }>(
+    '/auth/register',
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+    },
+    false
+  );
+  return res.user;
+}
+
+export async function getCurrentUser() {
+  return apiRequestWithRefresh<any>('/auth/me', {}, true);
+}
+
+export async function refreshAccessToken() {
+  if (!refreshToken) throw new Error('No refresh token available');
+
+  try {
+    const res = await apiRequest<{ access_token: string; refresh_token?: string }>(
+      '/auth/refresh',
+      {
+        method: 'POST',
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      },
+      false
+    );
+
+    setTokens({ access: res.access_token, refresh: res.refresh_token || refreshToken! });
+
+    return accessToken;
+  } catch (error) {
+    // If refresh fails, clear tokens
+    clearTokens();
+    throw new Error('Token refresh failed. Please login again.');
+  }
+}
+
+export async function setTokens({ access, refresh }: { access: string; refresh: string }) {
+  accessToken = access;
+  refreshToken = refresh;
+  await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, access);
+  await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refresh);
+}
+
+export async function clearTokens() {
+  accessToken = null;
+  refreshToken = null;
+  await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
+  await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
+}
+
+export async function getNutritionInsights(days: number = 30) {
+  return apiRequestWithRefresh<any>(`/nutrition/insights?days=${days}`);
+}
+
+export async function getNutritionTrends(days: number = 7) {
+  return apiRequestWithRefresh<any>(`/nutrition/trends?days=${days}`);
+}
+
+export async function generateWearableEnhancedMealPlan(profile: {
+  weight_kg: number;
+  height_cm: number;
+  age: number;
+  gender: string;
+  goal: string;
+  diseases?: string[];
+  allergies?: string[];
+  intolerances?: string[];
+}) {
+  return apiRequestWithRefresh<any>('/meal-plan/wearable-enhanced', {
+    method: 'POST',
+    body: JSON.stringify(profile),
+  });
+}
+
+export async function generateActivityBasedMealPlan(profile: {
+  weight_kg: number;
+  height_cm: number;
+  age: number;
+  gender: string;
+  activity_level: string;
+  goal: string;
+  diseases?: string[];
+  allergies?: string[];
+  intolerances?: string[];
+  dietary_restrictions?: string[];
+  variety_level?: string;
+}) {
+  return apiRequestWithRefresh<any>('/meal-plan/activity', {
+    method: 'POST',
+    body: JSON.stringify(profile),
+  });
+}
+
+export async function addNutritionHistory(mealData: {
+  timestamp: string;
+  meal_type: string;
+  recipe_name: string;
+  calories: number;
+  nutrients: {
+    protein: number;
+    carbs: number;
+    fat: number;
+    fiber: number;
+  };
+  satisfaction_rating?: number;
+}) {
+  return apiRequestWithRefresh<any>('/nutrition/history', {
+    method: 'POST',
+    body: JSON.stringify(mealData),
+  });
+}
+
+export async function updateProfile(profileData: {
+  first_name?: string;
+  last_name?: string;
+  profile?: {
+    weight_kg?: number;
+    height_cm?: number;
+    age?: number;
+    gender?: string;
+    fitness_level?: string;
+    activity_level?: string;
+  };
+  preferences?: {
+    allergies?: string[];
+    intolerances?: string[];
+    dietary_restrictions?: string[];
+  };
+}) {
+  return apiRequestWithRefresh<any>('/auth/profile', {
+    method: 'PUT',
+    body: JSON.stringify(profileData),
+  });
+}
+
+// Enhanced apiRequest with automatic token refresh
+export async function apiRequestWithRefresh<T>(
+  endpoint: string,
+  options: RequestInit = {},
+  requireAuth: boolean = true
+): Promise<T> {
+  try {
+    return await apiRequest<T>(endpoint, options, requireAuth);
+  } catch (error: any) {
+    // If it's a 401 error and we have a refresh token, try to refresh
+    if (error.message?.includes('401') && refreshToken && requireAuth) {
+      try {
+        await refreshAccessToken();
+        // Retry the original request with new token
+        return await apiRequest<T>(endpoint, options, requireAuth);
+      } catch (refreshError) {
+        // If refresh also fails, throw the original error
+        throw error;
+      }
+    }
+    throw error;
+  }
 }
 
 // TypeScript interfaces for activity tracking data
