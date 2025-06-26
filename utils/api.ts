@@ -1,7 +1,12 @@
+import * as SecureStore from 'expo-secure-store';
+
 const BASE_URL = 'https://nutrionhd-recommendation-modal.onrender.com';
 
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
+
+const ACCESS_TOKEN_KEY = 'accessToken';
+const REFRESH_TOKEN_KEY = 'refreshToken';
 
 export interface loginUserDto {
   email: string;
@@ -19,6 +24,17 @@ export interface signupUserDto {
   preferences?: any;
 }
 
+export async function loadTokens() {
+  try {
+    accessToken = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
+    refreshToken = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
+    return { accessToken, refreshToken };
+  } catch (error) {
+    console.error('Failed to load tokens from secure store', error);
+    return { accessToken: null, refreshToken: null };
+  }
+}
+
 export async function apiRequest<T>(
   endpoint: string,
   options: RequestInit = {},
@@ -27,16 +43,16 @@ export async function apiRequest<T>(
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
-  
+
   // Merge headers properly
   if (options.headers) {
     Object.assign(headers, options.headers);
   }
-  
+
   if (requireAuth && accessToken) {
     headers['Authorization'] = `Bearer ${accessToken}`;
   }
-  
+
   const res = await fetch(`${BASE_URL}${endpoint}`, {
     ...options,
     headers,
@@ -57,8 +73,7 @@ export async function loginUser(data: loginUserDto) {
     },
     false
   );
-  accessToken = res.access_token;
-  refreshToken = res.refresh_token;
+  setTokens({ access: res.access_token, refresh: res.refresh_token });
   return res.user;
 }
 
@@ -80,7 +95,7 @@ export async function getCurrentUser() {
 
 export async function refreshAccessToken() {
   if (!refreshToken) throw new Error('No refresh token available');
-  
+
   try {
     const res = await apiRequest<{ access_token: string; refresh_token?: string }>(
       '/auth/refresh',
@@ -90,12 +105,9 @@ export async function refreshAccessToken() {
       },
       false
     );
-    
-    accessToken = res.access_token;
-    if (res.refresh_token) {
-      refreshToken = res.refresh_token;
-    }
-    
+
+    setTokens({ access: res.access_token, refresh: res.refresh_token || refreshToken! });
+
     return accessToken;
   } catch (error) {
     // If refresh fails, clear tokens
@@ -104,14 +116,18 @@ export async function refreshAccessToken() {
   }
 }
 
-export function setTokens({ access, refresh }: { access: string; refresh: string }) {
+export async function setTokens({ access, refresh }: { access: string; refresh: string }) {
   accessToken = access;
   refreshToken = refresh;
+  await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, access);
+  await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refresh);
 }
 
-export function clearTokens() {
+export async function clearTokens() {
   accessToken = null;
   refreshToken = null;
+  await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
+  await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
 }
 
 export async function getNutritionInsights(days: number = 30) {

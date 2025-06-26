@@ -18,6 +18,7 @@ import {
   setTokens,
   clearTokens,
   updateProfile,
+  loadTokens,
 } from '~/utils/api';
 
 export interface UserPrefs {
@@ -61,6 +62,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   const checkAuth = async () => {
     setLoading(true);
     try {
+      await loadTokens();
       const user = await getCurrentUser();
       setUser(user);
       setSession(true);
@@ -88,23 +90,26 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
-  const signup = useCallback(async (data: signupUserDto) => {
-    setLoading(true);
-    try {
-      await signupUser(data);
-      // After signup, immediately login and fetch fresh user data
-      await signin({ email: data.email, password: data.password });
-    } catch (error) {
-      setUser(null);
-      setSession(false);
-      throw error;
-    }
-    setLoading(false);
-  }, [signin]);
+  const signup = useCallback(
+    async (data: signupUserDto) => {
+      setLoading(true);
+      try {
+        await signupUser(data);
+        // After signup, immediately login and fetch fresh user data
+        await signin({ email: data.email, password: data.password });
+      } catch (error) {
+        setUser(null);
+        setSession(false);
+        throw error;
+      }
+      setLoading(false);
+    },
+    [signin]
+  );
 
   const signout = useCallback(async () => {
     setLoading(true);
-    clearTokens();
+    await clearTokens();
     setUser(null);
     setSession(false);
     setLoading(false);
@@ -147,7 +152,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       // If refresh fails and we have no user, clear session
       if (!user) {
         setSession(false);
-        clearTokens();
+        await clearTokens();
       }
       throw error;
     }

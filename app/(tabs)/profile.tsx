@@ -1,10 +1,19 @@
 import { router } from 'expo-router';
 import { ChevronRight, LogOut, PenSquare } from 'lucide-react-native';
 import React, { useState, useEffect } from 'react';
-import { Text, TouchableOpacity, View, Image, ActivityIndicator, RefreshControl, ScrollView } from 'react-native';
+import {
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+} from 'react-native';
 
 import { Container } from '~/components/Container';
 import ProfileStatCard from '~/components/cards/ProfileStatCard';
+import MyWebComponent from '~/components/webview';
 import { useAuth } from '~/context/AuthContext';
 
 export default function Profile() {
@@ -47,9 +56,10 @@ export default function Profile() {
 
   // Profile data from /auth/me endpoint
   const profileData = {
-    name: user?.first_name && user?.last_name 
-      ? `${user.first_name} ${user.last_name}`
-      : user?.first_name || user?.name || user?.username || 'User',
+    name:
+      user?.first_name && user?.last_name
+        ? `${user.first_name} ${user.last_name}`
+        : user?.first_name || user?.name || user?.username || 'User',
     membership: 'Premium Member',
     avatarUrl: user?.profile?.avatar_url || 'https://avatars.githubusercontent.com/u/88510074?v=4',
     height: user?.profile?.height_cm ? `${user.profile.height_cm} cm` : 'N/A',
@@ -69,12 +79,9 @@ export default function Profile() {
 
   return (
     <Container page="profile">
-      <ScrollView 
+      <ScrollView
         className="flex-1"
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         {loading ? (
           <View className="flex-1 items-center justify-center py-20">
             <ActivityIndicator size="large" />
@@ -82,12 +89,11 @@ export default function Profile() {
           </View>
         ) : error ? (
           <View className="flex-1 items-center justify-center py-20">
-            <Text className="text-red-500 font-geistMedium">{error}</Text>
-            <TouchableOpacity 
+            <Text className="font-geistMedium text-red-500">{error}</Text>
+            <TouchableOpacity
               onPress={loadUserData}
-              className="mt-4 rounded-lg bg-blue-500 px-4 py-2"
-            >
-              <Text className="text-white font-geistMedium">Retry</Text>
+              className="mt-4 rounded-lg bg-blue-500 px-4 py-2">
+              <Text className="font-geistMedium text-white">Retry</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -106,7 +112,9 @@ export default function Profile() {
                   <PenSquare color="gray" />
                 </TouchableOpacity>
               </View>
-              <Text className="mt-2 font-geistMedium text-sm text-gray-600">{profileData.fitnessLevel}</Text>
+              <Text className="mt-2 font-geistMedium text-sm text-gray-600">
+                {profileData.fitnessLevel}
+              </Text>
             </View>
 
             {/* Stats Section */}
@@ -117,26 +125,7 @@ export default function Profile() {
               <ProfileStatCard icon="🏃" label="Fitness Level" value={profileData.fitnessLevel} />
             </View>
 
-            {/* Settings List */}
-            <View className="mb-6">
-              {settingsItems.map((item) => (
-                <TouchableOpacity
-                  key={item.id}
-                  className="mb-3 flex-row items-center justify-between rounded-xl border border-gray-200 p-4"
-                  accessibilityRole="button"
-                  accessibilityLabel={item.label}
-                  onPress={() => {
-                    // router.push(item.screen); // Uncomment to enable navigation
-                    console.log('Navigate to', item.label);
-                  }}>
-                  <View className="flex-row items-center">
-                    <Text className="mr-3 text-xl">{item.icon}</Text>
-                    <Text className="font-geistRegular text-base text-gray-800">{item.label}</Text>
-                  </View>
-                  <ChevronRight color="gray" />
-                </TouchableOpacity>
-              ))}
-            </View>
+            <MyWebComponent />
 
             {/* Log Out Button */}
             <TouchableOpacity

@@ -1,7 +1,14 @@
 import * as SecureStore from 'expo-secure-store';
 import React, { useState, useEffect } from 'react';
-import { Text, View, TouchableOpacity, Alert, LayoutAnimation, Platform, UIManager } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  Alert,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+} from 'react-native';
 import Sahha, { SahhaEnvironment, SahhaSensor, SahhaSensorStatus } from 'sahha-react-native';
 
 import CircularProgressBar from '~/components/CircularProgressBar';
@@ -67,8 +74,8 @@ const MealCard = ({ meal, mealType }: { meal: any; mealType: string }) => {
 
   const getPreparationPreview = () => {
     if (!meal.preparation) return '';
-    return meal.preparation.length > 50 
-      ? meal.preparation.substring(0, 50) + '...' 
+    return meal.preparation.length > 50
+      ? meal.preparation.substring(0, 50) + '...'
       : meal.preparation;
   };
 
@@ -78,9 +85,7 @@ const MealCard = ({ meal, mealType }: { meal: any; mealType: string }) => {
         <Text className="font-geistSemiBold text-lg text-gray-800">
           {formatMealTypeLabel(mealType)}
         </Text>
-        <Text className="font-geistMedium text-sm text-gray-600">
-          {meal.calories} cal
-        </Text>
+        <Text className="font-geistMedium text-sm text-gray-600">{meal.calories} cal</Text>
       </View>
       <Text className="mb-2 font-geistMedium text-base text-gray-800">{meal.recipe_name}</Text>
       <Text className="font-geistRegular text-sm text-gray-600">{getPreparationPreview()}</Text>
@@ -91,8 +96,7 @@ const MealCard = ({ meal, mealType }: { meal: any; mealType: string }) => {
 export default function Home() {
   const { user } = useAuth();
   const { data } = useBiomarkers();
-  const { data: scoreData } = useSahhaScore('2025-06-24');
-  console.log('scoreData', JSON.stringify(scoreData, null, 2));
+  console.log(JSON.stringify(data, null, 2));
 
   const [stats, setStats] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(false);
@@ -100,12 +104,62 @@ export default function Home() {
   const [showMealModal, setShowMealModal] = useState(false);
   const [savedMeals, setSavedMeals] = useState<{ [key: string]: any }>({});
 
+  // Process biomarkers data for display
+  const processBiomarkersData = () => {
+    if (!data || !Array.isArray(data)) {
+      return {
+        steps: { current: 0, target: 7500 },
+        sleep: { current: 0, target: 8 },
+        activeCalories: { current: 0, target: 300 },
+        activeHours: { current: 0, target: 8 },
+      };
+    }
+
+    // Get today's data (most recent entries)
+    const today = new Date().toISOString().split('T')[0];
+    const todayData = data.filter(
+      (item) => item.startDateTime?.includes(today) || item.endDateTime?.includes(today)
+    );
+
+    // Extract relevant metrics
+    const steps = todayData.find((item) => item.type === 'steps')?.value || 0;
+    const sleepDuration = todayData.find((item) => item.type === 'sleep_duration')?.value || 0;
+    const activeCalories =
+      todayData.find((item) => item.type === 'active_energy_burned')?.value || 0;
+    const activeHours = todayData.find((item) => item.type === 'active_hours')?.value || 0;
+
+    return {
+      steps: {
+        current: parseInt(steps.toString()),
+        target: 7500,
+      },
+      sleep: {
+        current: parseFloat((parseInt(sleepDuration.toString()) / 60).toFixed(1)), // Convert minutes to hours
+        target: 8,
+      },
+      activeCalories: {
+        current: parseInt(activeCalories.toString()),
+        target: 300,
+      },
+      activeHours: {
+        current: parseInt(activeHours.toString()),
+        target: 8,
+      },
+    };
+  };
+
+  const healthMetrics = processBiomarkersData();
+
+  // Calculate total calories burned (rough estimation)
+  const totalCaloriesBurned =
+    healthMetrics.activeCalories.current + healthMetrics.steps.current * 0.04; // Rough calculation
+
   // Load saved meals on mount
   useEffect(() => {
     (async () => {
       const meals: { [key: string]: any } = {};
       for (const key of MEAL_KEYS) {
-        const val = await AsyncStorage.getItem(`@meal_${key}`);
+        const val = await SecureStore.getItemAsync(`@meal_${key}`);
         if (val) meals[key] = JSON.parse(val);
       }
       setSavedMeals(meals);
@@ -114,7 +168,7 @@ export default function Home() {
 
   // Save meal to AsyncStorage
   const saveMealLocally = async (mealType: string, meal: any) => {
-    await AsyncStorage.setItem(`@meal_${mealType}`, JSON.stringify(meal));
+    await SecureStore.setItem(`@meal_${mealType}`, JSON.stringify(meal));
     setSavedMeals((prev) => ({ ...prev, [mealType]: meal }));
   };
 
@@ -255,17 +309,12 @@ export default function Home() {
   const enableSensors = () => {
     console.log('Enable Sensors');
     Sahha.enableSensors(
-      [
-        SahhaSensor.steps,
-        SahhaSensor.sleep,
-        SahhaSensor.heart_rate,
-        SahhaSensor.device_lock,
-      ],
-      (error: string, success: boolean) => {
+      [SahhaSensor.steps, SahhaSensor.sleep, SahhaSensor.heart_rate, SahhaSensor.device_lock],
+      (error: string, value: SahhaSensorStatus) => {
         if (error) {
           console.error(`Error: ${error}`);
         } else {
-          console.log(`Enable Sensors success: ${success}`);
+          console.log(`Enable Sensors status: ${SahhaSensorStatus[value]}`);
           getSensorStatus();
         }
       }
@@ -345,18 +394,16 @@ export default function Home() {
       await addNutritionHistory(mealData);
       // Save locally
       await saveMealLocally(mealType, mealData);
-      
+
       Alert.alert(
         'Meal Saved!',
         `"${meal.Name}" has been added to your ${formatMealTypeLabel(mealType)}.`,
         [{ text: 'OK' }]
       );
     } catch (err: any) {
-      Alert.alert(
-        'Error',
-        `Failed to save meal: ${err.message || 'Unknown error'}`,
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Error', `Failed to save meal: ${err.message || 'Unknown error'}`, [
+        { text: 'OK' },
+      ]);
     }
   };
 
@@ -372,8 +419,7 @@ export default function Home() {
         <TouchableOpacity
           onPress={handleClean}
           disabled={loading}
-          className={`mb-4 w-full rounded-lg bg-green-500 p-4 ${loading ? 'opacity-50' : ''}`}
-        >
+          className={`mb-4 w-full rounded-lg bg-green-500 p-4 ${loading ? 'opacity-50' : ''}`}>
           <Text className="text-center font-geistMedium text-base text-white">
             {loading ? 'Generating...' : 'Generate Recommendation'}
           </Text>
@@ -388,17 +434,42 @@ export default function Home() {
           <Text className="font-geistSemiBold text-3xl">{user ? user.name : 'Friend'}</Text>
         </View>
         <View className="my-6 gap-4">
-          <RingProgress progress={0.7} radius={100} color="#10C875" />
+          <RingProgress
+            progress={Math.min(
+              healthMetrics.activeCalories.current / healthMetrics.activeCalories.target,
+              1
+            )}
+            radius={100}
+            color="#10C875"
+          />
           <Text className="text-center font-geistRegular text-lg ">
-            You've burned 1000 calories today
+            You've burned {Math.round(totalCaloriesBurned)} calories today
           </Text>
         </View>
 
         {/* Health Stats Cards  */}
         <HealthStatsCards />
 
-        <MetricCard title="sleep" value={6.5} target={8} percentage={80} />
-        <MetricCard title="steps" value={5000} target={7500} percentage={50} />
+        <MetricCard
+          title="sleep"
+          value={healthMetrics.sleep.current}
+          target={healthMetrics.sleep.target}
+          percentage={Math.round((healthMetrics.sleep.current / healthMetrics.sleep.target) * 100)}
+        />
+        <MetricCard
+          title="steps"
+          value={healthMetrics.steps.current}
+          target={healthMetrics.steps.target}
+          percentage={Math.round((healthMetrics.steps.current / healthMetrics.steps.target) * 100)}
+        />
+        <MetricCard
+          title="active hours"
+          value={healthMetrics.activeHours.current}
+          target={healthMetrics.activeHours.target}
+          percentage={Math.round(
+            (healthMetrics.activeHours.current / healthMetrics.activeHours.target) * 100
+          )}
+        />
         <CircularProgressBar />
       </View>
 

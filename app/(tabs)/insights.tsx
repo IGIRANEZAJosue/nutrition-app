@@ -1,16 +1,117 @@
 import { Bed, Brain, Footprints, Heart } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
-import { Image, Text, View, ActivityIndicator } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { Container } from '~/components/Container';
 import AnalysisCard from '~/components/cards/AnalysisCard';
-import RecommendedRecipes from '~/components/sections/RecommendedRecipes';
+import useBiomarkers from '~/hooks/useBiomarkers';
 import { getNutritionInsights } from '~/utils/api';
 
 const Insights = () => {
+  const { data: biomarkersData } = useBiomarkers();
   const [insights, setInsights] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Process biomarkers data for insights
+  const processBiomarkersInsights = () => {
+    if (!biomarkersData || !Array.isArray(biomarkersData)) {
+      return {
+        sleepQuality: 'No data available',
+        stepsTrend: 'No data available',
+        activityLevel: 'No data available',
+        workoutRecommendation: 'General post-workout nutrition recommended',
+      };
+    }
+
+    // Get today's and yesterday's data for comparison
+    const today = new Date().toISOString().split('T')[0];
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    const todayData = biomarkersData.filter(
+      (item) => item.startDateTime?.includes(today) || item.endDateTime?.includes(today)
+    );
+    const yesterdayData = biomarkersData.filter(
+      (item) => item.startDateTime?.includes(yesterday) || item.endDateTime?.includes(yesterday)
+    );
+
+    // Extract key metrics
+    const todaySteps = parseInt(todayData.find((item) => item.type === 'steps')?.value || '0');
+    const yesterdaySteps = parseInt(
+      yesterdayData.find((item) => item.type === 'steps')?.value || '0'
+    );
+    const sleepDuration = parseInt(
+      todayData.find((item) => item.type === 'sleep_duration')?.value || '0'
+    );
+    const activeCalories = parseInt(
+      todayData.find((item) => item.type === 'active_energy_burned')?.value || '0'
+    );
+    const activeHours = parseInt(
+      todayData.find((item) => item.type === 'active_hours')?.value || '0'
+    );
+    const sedentaryTime = parseInt(
+      todayData.find((item) => item.type === 'activity_sedentary_duration')?.value || '0'
+    );
+
+    // Generate insights
+    const sleepHours = sleepDuration / 60;
+    let sleepQuality = '';
+    if (sleepHours >= 7.5) {
+      sleepQuality = 'Excellent - Well rested for optimal metabolism';
+    } else if (sleepHours >= 6.5) {
+      sleepQuality = 'Good - Consider earlier bedtime for better recovery';
+    } else if (sleepHours >= 5) {
+      sleepQuality = 'Poor - Lack of sleep affects appetite hormones';
+    } else {
+      sleepQuality = 'Critical - Sleep deprivation impacts weight management';
+    }
+
+    // Steps trend analysis
+    let stepsTrend = '';
+    if (todaySteps > yesterdaySteps) {
+      stepsTrend = `Great progress! ${todaySteps.toLocaleString()} steps (+${(todaySteps - yesterdaySteps).toLocaleString()})`;
+    } else if (todaySteps < yesterdaySteps) {
+      stepsTrend = `${todaySteps.toLocaleString()} steps (${(todaySteps - yesterdaySteps).toLocaleString()} from yesterday)`;
+    } else {
+      stepsTrend = `${todaySteps.toLocaleString()} steps - Consistent with yesterday`;
+    }
+
+    // Activity level assessment
+    let activityLevel = '';
+    if (activeCalories > 200) {
+      activityLevel = 'High activity - Perfect for muscle recovery nutrition';
+    } else if (activeCalories > 100) {
+      activityLevel = 'Moderate activity - Balanced nutrition recommended';
+    } else {
+      activityLevel = 'Light activity - Focus on nutrient-dense foods';
+    }
+
+    // Workout-based recommendation
+    let workoutRecommendation = '';
+    if (activeCalories > 150) {
+      workoutRecommendation = 'You had a solid workout session today!';
+    } else if (activeCalories > 75) {
+      workoutRecommendation = 'You had moderate activity today.';
+    } else {
+      workoutRecommendation = 'Light activity day.';
+    }
+
+    return {
+      sleepQuality,
+      stepsTrend,
+      activityLevel,
+      workoutRecommendation,
+      metrics: {
+        sleepHours: sleepHours.toFixed(1),
+        todaySteps,
+        activeCalories,
+        activeHours,
+        sedentaryHours: (sedentaryTime / 60).toFixed(1),
+      },
+    };
+  };
+
+  const biomarkersInsights = processBiomarkersInsights();
 
   useEffect(() => {
     const fetchInsights = async () => {
@@ -36,60 +137,68 @@ const Insights = () => {
             <Brain size={20} color="white" />
           </View>
           <View className="flex-1 gap-2">
-            <Text className="font-geistSemiBold text-lg">Post-Workout Nutrition Tip</Text>
+            <Text className="font-geistSemiBold text-lg">AI tip</Text>
             <Text className="font-geistRegular text-sm text-gray-700">
-              You just completed a 45-min workout. To replenish glycogen stores, consider these
-              carb-rich foods:
+              {biomarkersInsights.workoutRecommendation} To optimize recovery and replenish energy
+              stores, consider these carb-rich foods:
             </Text>
-
-            <View className="mt-4 flex-row gap-2">
-              <Image
-                source={require('../../assets/banana-image.png')}
-                style={{ width: 72, height: 72, borderRadius: 8 }}
-              />
-              <Image
-                source={require('../../assets/oats-image.png')}
-                style={{ width: 72, height: 72, borderRadius: 8 }}
-              />
-              <Image
-                source={require('../../assets/dough-image.png')}
-                style={{ width: 72, height: 72, borderRadius: 8 }}
-              />
-            </View>
           </View>
         </View>
       </View>
 
-      <RecommendedRecipes />
-
       <View>
         <Text className="mt-4 font-geistSemiBold text-xl">Today's Analysis</Text>
-        {loading ? (
-          <ActivityIndicator />
-        ) : error ? (
-          <Text className="text-red-500">{error}</Text>
-        ) : insights ? (
-          <View className="my-2 gap-4">
-            <AnalysisCard
-              icon={<Bed size={20} color="white" accessibilityLabel="Sleep icon" />}
-              bgColor="bg-[#6366F1]"
-              title="Sleep Quality"
-              description={`Sleep quality: ${insights.sleep_quality || 'N/A'}`}
-            />
-            <AnalysisCard
-              icon={<Footprints size={20} color="white" accessibilityLabel="Step count icon" />}
-              bgColor="bg-blue-500"
-              title="Step Count Trend"
-              description={`Average daily steps: ${insights.activity?.total_steps ?? 'N/A'}`}
-            />
-            <AnalysisCard
-              icon={<Heart size={20} color="white" accessibilityLabel="Heart rate icon" />}
-              bgColor="bg-[#EC4899]"
-              title="Heart Rate Variability"
-              description={`HRV: ${insights.heart_rate?.variability ?? 'N/A'}`}
-            />
+        <View className="my-2 gap-4">
+          <AnalysisCard
+            icon={<Bed size={20} color="white" accessibilityLabel="Sleep icon" />}
+            bgColor="bg-[#6366F1]"
+            title="Sleep Quality"
+            description={biomarkersInsights.sleepQuality}
+          />
+          <AnalysisCard
+            icon={<Footprints size={20} color="white" accessibilityLabel="Step count icon" />}
+            bgColor="bg-blue-500"
+            title="Step Count Trend"
+            description={biomarkersInsights.stepsTrend}
+          />
+          <AnalysisCard
+            icon={<Heart size={20} color="white" accessibilityLabel="Activity level icon" />}
+            bgColor="bg-[#EC4899]"
+            title="Activity Level"
+            description={biomarkersInsights.activityLevel}
+          />
+        </View>
+
+        {/* Additional Real-time Metrics */}
+        <View className="mt-6">
+          <Text className="mb-3 font-geistSemiBold text-lg">Health Metrics Summary</Text>
+          <View className="gap-3 rounded-xl bg-gray-50 p-4">
+            <View className="flex-row justify-between">
+              <Text className="font-geistMedium text-gray-700">Sleep Duration</Text>
+              <Text className="font-geistSemiBold">
+                {biomarkersInsights.metrics?.sleepHours || '0'} hours
+              </Text>
+            </View>
+            <View className="flex-row justify-between">
+              <Text className="font-geistMedium text-gray-700">Active Calories</Text>
+              <Text className="font-geistSemiBold">
+                {biomarkersInsights.metrics?.activeCalories || 0} kcal
+              </Text>
+            </View>
+            <View className="flex-row justify-between">
+              <Text className="font-geistMedium text-gray-700">Active Hours</Text>
+              <Text className="font-geistSemiBold">
+                {biomarkersInsights.metrics?.activeHours || 0} hours
+              </Text>
+            </View>
+            <View className="flex-row justify-between">
+              <Text className="font-geistMedium text-gray-700">Sedentary Time</Text>
+              <Text className="font-geistSemiBold">
+                {biomarkersInsights.metrics?.sedentaryHours || '0'} hours
+              </Text>
+            </View>
           </View>
-        ) : null}
+        </View>
       </View>
     </Container>
   );
