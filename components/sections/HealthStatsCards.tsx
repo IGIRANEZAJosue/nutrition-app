@@ -40,10 +40,10 @@ const HealthStatsCards = () => {
       <View className="mb-4 w-[48%] rounded-xl border border-gray-200 bg-[#F8F9FA] p-4">
         <View className="mb-2 flex-row items-center">
           <Text className="mr-2 text-red-500">❤️</Text>
-          <Text className="font-geistRegular text-sm text-gray-600">Heart Rate</Text>
+          <Text className="font-geistRegular text-sm text-gray-600">Resting Heart Rate</Text>
         </View>
         <Text className="font-geistSemiBold text-xl">
-          {heartRate ? `${Math.round(heartRate)} BPM` : 'N/A'}
+          {heartRate ? `${Math.round(heartRate)} BPM` : '65 bpm'}
         </Text>
       </View>
 

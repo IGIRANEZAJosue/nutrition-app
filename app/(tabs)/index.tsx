@@ -417,6 +417,14 @@ export default function Home() {
   return (
     <Container page="home">
       <View className="my-4 gap-4">
+        <View>
+          <Text className="my-4 font-geistSemiBold text-3xl">
+            Welcome, {user ? user.first_name : 'Friend'}
+          </Text>
+          <Text className="mb-5 font-geistRegular text-gray-600">
+            Let's track your health today
+          </Text>
+        </View>
         {/* Clean Button */}
         <TouchableOpacity
           onPress={handleClean}
