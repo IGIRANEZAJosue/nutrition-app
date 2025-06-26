@@ -58,7 +58,7 @@ const HealthStatsCards = () => {
       <View className="mb-4 w-[48%] rounded-xl border border-gray-200 bg-[#F8F9FA] p-4">
         <View className="mb-2 flex-row items-center">
           <Text className="mr-2">🔥</Text>
-          <Text className="font-geistRegular text-sm text-gray-600">Calories</Text>
+          <Text className="font-geistRegular text-sm text-gray-600">Active Calories</Text>
         </View>
         <Text className="font-geistSemiBold text-xl">
           {calories ? `${Math.round(calories)} kcal` : 'N/A'}

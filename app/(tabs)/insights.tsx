@@ -10,7 +10,11 @@ import useBiomarkers from '~/hooks/useBiomarkers';
 import { getNutritionInsights, generateActivityBasedMealPlan } from '~/utils/api';
 
 const Insights = () => {
-  const { data: biomarkersData } = useBiomarkers();
+  const {
+    data: biomarkersData,
+    loading: biomarkersLoading,
+    error: biomarkersError,
+  } = useBiomarkers();
   const [insights, setInsights] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,11 +24,33 @@ const Insights = () => {
 
   // Process biomarkers data for insights
   const processBiomarkersInsights = () => {
-    if (!biomarkersData || !Array.isArray(biomarkersData)) {
+    console.log('Processing biomarkers data:', biomarkersData);
+    console.log('Biomarkers loading:', biomarkersLoading);
+    console.log('Biomarkers error:', biomarkersError);
+
+    if (biomarkersLoading) {
       return {
-        sleepQuality: 'No data available',
-        stepsTrend: 'No data available',
-        activityLevel: 'No data available',
+        sleepQuality: 'Loading data...',
+        stepsTrend: 'Loading data...',
+        activityLevel: 'Loading data...',
+        workoutRecommendation: 'Loading recommendations...',
+      };
+    }
+
+    if (biomarkersError) {
+      return {
+        sleepQuality: `Error: ${biomarkersError}`,
+        stepsTrend: `Error: ${biomarkersError}`,
+        activityLevel: `Error: ${biomarkersError}`,
+        workoutRecommendation: 'Unable to load recommendations due to data error',
+      };
+    }
+
+    if (!biomarkersData || !Array.isArray(biomarkersData) || biomarkersData.length === 0) {
+      return {
+        sleepQuality: 'No biomarker data available',
+        stepsTrend: 'No step data available',
+        activityLevel: 'No activity data available',
         workoutRecommendation: 'General post-workout nutrition recommended',
       };
     }
@@ -33,30 +59,68 @@ const Insights = () => {
     const today = new Date().toISOString().split('T')[0];
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-    const todayData = biomarkersData.filter(
-      (item) => item.startDateTime?.includes(today) || item.endDateTime?.includes(today)
-    );
-    const yesterdayData = biomarkersData.filter(
-      (item) => item.startDateTime?.includes(yesterday) || item.endDateTime?.includes(yesterday)
+    console.log('Looking for data on:', today, 'and', yesterday);
+    console.log(
+      'Available biomarkers data:',
+      biomarkersData.map((item) => ({
+        type: item.type,
+        value: item.value,
+        startDateTime: item.startDateTime,
+        endDateTime: item.endDateTime,
+      }))
     );
 
-    // Extract key metrics
-    const todaySteps = parseInt(todayData.find((item) => item.type === 'steps')?.value || '0');
+    const todayData = biomarkersData.filter((item) => {
+      const itemDate = item.startDateTime?.split('T')[0] || item.endDateTime?.split('T')[0];
+      return itemDate === today;
+    });
+    const yesterdayData = biomarkersData.filter((item) => {
+      const itemDate = item.startDateTime?.split('T')[0] || item.endDateTime?.split('T')[0];
+      return itemDate === yesterday;
+    });
+
+    console.log('Today data found:', todayData.length, 'items');
+    console.log('Yesterday data found:', yesterdayData.length, 'items');
+
+    // Extract key metrics - if today's data is not available, use most recent data
+    const getLatestMetric = (type: string) => {
+      // Try today first
+      let metric = todayData.find((item) => item.type === type);
+      if (!metric) {
+        // Try yesterday
+        metric = yesterdayData.find((item) => item.type === type);
+      }
+      if (!metric) {
+        // Try any recent data from the last 7 days
+        const recentData = biomarkersData
+          .filter((item) => item.type === type)
+          .sort(
+            (a, b) =>
+              new Date(b.endDateTime || b.startDateTime).getTime() -
+              new Date(a.endDateTime || a.startDateTime).getTime()
+          );
+        metric = recentData[0];
+      }
+      return metric;
+    };
+
+    const todaySteps = parseInt(getLatestMetric('steps')?.value || '0');
     const yesterdaySteps = parseInt(
       yesterdayData.find((item) => item.type === 'steps')?.value || '0'
     );
-    const sleepDuration = parseInt(
-      todayData.find((item) => item.type === 'sleep_duration')?.value || '0'
-    );
-    const activeCalories = parseInt(
-      todayData.find((item) => item.type === 'active_energy_burned')?.value || '0'
-    );
-    const activeHours = parseInt(
-      todayData.find((item) => item.type === 'active_hours')?.value || '0'
-    );
-    const sedentaryTime = parseInt(
-      todayData.find((item) => item.type === 'activity_sedentary_duration')?.value || '0'
-    );
+    const sleepDuration = parseInt(getLatestMetric('sleep_duration')?.value || '0');
+    const activeCalories = parseInt(getLatestMetric('active_energy_burned')?.value || '0');
+    const activeHours = parseInt(getLatestMetric('active_hours')?.value || '0');
+    const sedentaryTime = parseInt(getLatestMetric('activity_sedentary_duration')?.value || '0');
+
+    console.log('Extracted metrics:', {
+      todaySteps,
+      yesterdaySteps,
+      sleepDuration,
+      activeCalories,
+      activeHours,
+      sedentaryTime,
+    });
 
     // Generate insights
     const sleepHours = sleepDuration / 60;
